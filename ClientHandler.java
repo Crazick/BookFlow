@@ -1,25 +1,21 @@
 import java.net.*;
 import java.io.*;
+import java.util.List;
 
 class ClientHandler implements Runnable{
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+    private LibraryService libraryService;
 
     // Konstruktor
-    public ClientHandler(Socket socket){
+    public ClientHandler(Socket socket, LibraryService libraryService) {
         this.socket = socket;
+        this.libraryService = libraryService;
     }
     private void handleLogin(String[] parts){
         // logowanie
     }
-    private void handleSearch(String[] parts){
-        // wyszukiwanie
-    }
-    private void handleBorrow(String[] parts){
-        // wypożyczanie
-    }
-    // nie wiem jakie jeszcze komendy na ten moment
 
     @Override
     public void run()
@@ -42,14 +38,58 @@ class ClientHandler implements Runnable{
                         handleLogin(parts);
                         break;
                     case "SEARCH":
-                        handleSearch(parts);
+                        String phrase = parts[1];
+                        List<Book> result = libraryService.search(phrase);
+
+                        for (Book b : result) {
+                            out.println(b.toString());
+                        }
                         break;
                     case "BORROW":
-                        handleBorrow(parts);
+                        if (parts.length < 2) {
+                            out.println("ERROR: Missing book ID");
+                            break;
+                        }
+
+                        try {
+                            int bookId = Integer.parseInt(parts[1]);
+
+                            boolean success = libraryService.borrow(bookId);
+
+                            if (success) {
+                                out.println("BORROW_SUCCESS");
+                            } else {
+                                out.println("BORROW_FAILED");
+                            }
+
+                        } catch (NumberFormatException e) {
+                            out.println("ERROR: Invalid ID");
+                        }
+                        break;
+                    case "RETURN":
+                        if (parts.length < 2) {
+                            out.println("ERROR: Missing book ID");
+                            break;
+                        }
+
+                        try {
+                            int bookId = Integer.parseInt(parts[1]);
+
+                            boolean success = libraryService.returnBook(bookId);
+
+                            if (success) {
+                                out.println("RETURN_SUCCESS");
+                            } else {
+                                out.println("RETURN_FAILED");
+                            }
+
+                        } catch (NumberFormatException e) {
+                            out.println("ERROR: Invalid ID");
+                        }
                         break;
                     default:
                         out.println("UNKNOWN_COMMAND");
-
+                        break;
                 }
             }
         }
