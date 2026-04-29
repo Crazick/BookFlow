@@ -1,0 +1,19 @@
+Wykonywać z poziomu BookFlow a nie żadnego podkatalogu
+
+kompilacja
+// działa i na Windowsie i Linuxie
+javac -cp "lib/sqlite-jdbc-3.53.0.0.jar" -d out -sourcepath src @src/sources.txt
+
+uruchamianie
+// === wersja Windows ===
+// serwer -> --enable-... ze wzgledu na warningi (nie wiem jak się tego pozbyć)
+java --enable-native-access=ALL-UNNAMED -cp "out;lib/sqlite-jdbc-3.53.0.0.jar" com.bookflow.server.Server
+
+// w drugim terminalu
+java -cp "out;lib/sqlite-jdbc-3.53.0.0.jar" com.bookflow.client.Client
+
+// === wersja Linux ===
+// zmienia się tylko "out:lib" zamiast "out;lib"
+java --enable-native-access=ALL-UNNAMED -cp "out:lib/sqlite-jdbc-3.53.0.0.jar" com.bookflow.server.Server
+
+java -cp "out:lib/sqlite-jdbc-3.53.0.0.jar" com.bookflow.client.Client

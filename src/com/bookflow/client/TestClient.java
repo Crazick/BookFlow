@@ -1,4 +1,6 @@
-import java.net.*;
+package com.bookflow.client;
+
+import java.net.Socket;
 import java.io.*;
 
 public class TestClient {

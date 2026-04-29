@@ -1,6 +1,8 @@
+package com.bookflow.config;
+
 import java.sql.*;
 
-class DatabaseManager
+public class DatabaseManager
 {
     private static final String URL = "jdbc:sqlite:BIBLIOTEKA.db";
 

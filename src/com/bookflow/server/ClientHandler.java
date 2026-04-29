@@ -1,8 +1,15 @@
-import java.net.*;
+package com.bookflow.server;
+
+import com.bookflow.service.LibraryService;
+import com.bookflow.model.Book;
+import com.bookflow.enums.LoginStatus;
+import com.bookflow.enums.RegisterStatus;
+
 import java.io.*;
+import java.net.Socket;
 import java.util.List;
 
-class ClientHandler implements Runnable{
+public class ClientHandler implements Runnable{
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;

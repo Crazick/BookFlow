@@ -1,11 +1,17 @@
+package com.bookflow.dao;
+
+import com.bookflow.config.DatabaseManager;
+import com.bookflow.model.Book;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
 
 // dostęp do bazy danych
-class BookDAO
+public class BookDAO
 {
     private DatabaseManager db = new DatabaseManager();
 

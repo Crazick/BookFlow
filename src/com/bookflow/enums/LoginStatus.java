@@ -1,3 +1,5 @@
+package com.bookflow.enums;
+
 public enum LoginStatus {
     SUCCESS,
     USER_NOT_FOUND,

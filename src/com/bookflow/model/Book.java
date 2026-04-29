@@ -1,4 +1,6 @@
-class Book
+package com.bookflow.model;
+
+public class Book
 {
     private int id;
     private String title;

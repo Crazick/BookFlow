@@ -1,6 +1,16 @@
-import java.util.*;
+package com.bookflow.service;
 
-class LibraryService{
+import com.bookflow.dao.BookDAO;
+import com.bookflow.dao.BorrowDAO;
+import com.bookflow.dao.UserDAO;
+
+import com.bookflow.enums.LoginStatus;
+import com.bookflow.enums.RegisterStatus;
+import com.bookflow.model.Book;
+
+import java.util.List;
+
+public class LibraryService{
     private BookDAO bookDAO = new BookDAO();
     private UserDAO userDAO = new UserDAO();
     private BorrowDAO borrowDAO = new BorrowDAO();

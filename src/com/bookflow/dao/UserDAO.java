@@ -1,6 +1,12 @@
+package com.bookflow.dao;
+
+import com.bookflow.config.DatabaseManager;
+import com.bookflow.enums.LoginStatus;
+import com.bookflow.enums.RegisterStatus;
+
 import java.sql.*;
 
-class UserDAO
+public class UserDAO
 {
     private DatabaseManager db = new DatabaseManager();
 

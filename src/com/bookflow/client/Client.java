@@ -1,8 +1,10 @@
+package com.bookflow.client;
+
 import java.io.*;
 import java.util.Scanner;
 import java.net.Socket;
 
-class Client
+public class Client
 {
     public static void main(String[] args)
     {

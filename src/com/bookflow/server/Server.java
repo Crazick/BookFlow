@@ -1,9 +1,10 @@
-import java.net.*;
-import java.io.*;
-import java.util.*;
+package com.bookflow.server;
 
-// kompilacja javac -cp ".;lib/sqlite-jdbc-3.53.0.0.jar" *.java
-// uruchamianie java --enable-native-access=ALL-UNNAMED -cp ".;lib/sqlite-jdbc-3.53.0.0.jar" Server
+import com.bookflow.service.LibraryService;
+
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.io.IOException;
 
 public class Server
 {

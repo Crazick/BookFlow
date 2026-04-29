@@ -1,6 +1,9 @@
+package com.bookflow.dao;
+
+import com.bookflow.config.DatabaseManager;
 import java.sql.*;
 
-class BorrowDAO {
+public class BorrowDAO {
     private DatabaseManager db = new DatabaseManager();
 
     // ===== BORROW BOOK =====
