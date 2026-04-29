@@ -12,6 +12,7 @@ class Book
         this.title = title;
         this.author = author;
         this.genre = genre;
+        this.totalCopies = totalCopies;
         this.availableCopies = availableCopies;
     }
 

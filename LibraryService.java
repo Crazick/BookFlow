@@ -1,44 +1,33 @@
 import java.util.*;
 
 class LibraryService{
-    private List<Book> books = new ArrayList<>();
+    private BookDAO bookDAO = new BookDAO();
+    private UserDAO userDAO = new UserDAO();
+    private BorrowDAO borrowDAO = new BorrowDAO();
 
-    public LibraryService(){
-        // przykładowe książki do testów
-        books.add(new Book(1, "Wiedźmin: Ostatnie życzenie", "Andrzej Sapkowski", "fantasy", 5, 2));
-        books.add(new Book(2, "Harry Potter i Kamień Filozoficzny", "J.K. Rowling", "fantasy", 2, 0));
-    }
-
+    // === BOOKS ===
     // wyszukiwanie przez frazę (autor/tytuł)
-    public List<Book> search(String phrase){
-        List<Book> result = new ArrayList<>();
-
-        for(Book b : books){
-            if(b.title().toLowerCase().contains(phrase.toLowerCase())
-                    || b.author().toLowerCase().contains(phrase.toLowerCase())){
-                result.add(b);
-            }
-        }
-        return result;
+    public List<Book> searchBook(String phrase){
+        return bookDAO.search(phrase);
+    }
+    // wypożyczanie książek
+    public boolean borrowBook(int userId, int bookId) {
+        return borrowDAO.borrow(userId, bookId);
+    }
+    // zwrot książek
+    public boolean returnBook(int userId, int bookId) {
+        return borrowDAO.returnBook(userId, bookId);
     }
 
-    public boolean borrow(int id){
-        for(Book b : books){
-            if(id == b.id() && b.isAvailable()){
-                b.setAvailableCopies(b.availableCopies() - 1);
-                return true;
-            }
-        }
-        return false;
+    // === USERS ===
+    public LoginStatus login(String username, String password){
+        return userDAO.login(username, password);
+    }
+    public RegisterStatus register(String username, String password){
+        return userDAO.register(username, password);
+    }
+    public int getUserID(String username){
+        return userDAO.getUserID(username);
     }
 
-    public boolean returnBook(int id){
-        for(Book b : books){
-            if(id == b.id()){
-                b.setAvailableCopies(b.availableCopies() + 1);
-                return true;
-            }
-        }
-        return false;
-    }
 }
