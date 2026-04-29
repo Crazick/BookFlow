@@ -15,7 +15,7 @@ public class BookDAO
 {
     private DatabaseManager db = new DatabaseManager();
 
-    //helper mapowania
+    // helper mapowania
     private Book mapBook(ResultSet rs) throws SQLException{
         return new Book(
                 rs.getInt("id"),
@@ -27,15 +27,15 @@ public class BookDAO
         );
     }
 
-    public List<Book> search(String phrase)
-    {
+    // === SEARCH ===
+    public List<Book> search(String phrase) {
         List<Book> result = new ArrayList<>();
         String sql = "SELECT id, title, author, genre, totalCopies, availableCopies FROM BIBLIOTEKA WHERE LOWER(title) LIKE ? OR LOWER(author) LIKE ?";
 
         try(Connection conn = db.connect();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
-            String query = "%" + phrase + "%";
+            String query = "%" + phrase.toLowerCase() + "%";
             stmt.setString(1, query);
             stmt.setString(2, query);
 
@@ -50,37 +50,52 @@ public class BookDAO
         return result;
     }
 
-    public boolean borrow(int id){
-        String sql = "UPDATE BIBLIOTEKA "
-                + "SET availableCopies = availableCopies - 1 "
-                + "WHERE id = ? AND availableCopies > 0";
-        try(Connection conn = db.connect();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+    // === AVAILABILITY ===
+    public boolean isAvailable(int bookId){
+        String sql = "SELECT FROM BIBLIOTEKA WHERE id = ?";
 
-            stmt.setInt(1,id);
-            return stmt.executeUpdate() > 0;
-
-        }
-        catch(SQLException e){
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean returnBook(int id){
-        String sql = "UPDATE BIBLIOTEKA "
-                + "SET availableCopies = availableCopies + 1 "
-                + "WHERE id = ? AND availableCopies < totalCopies";
         try(Connection conn = db.connect();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
+            stmt.setInt(1, bookId);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                return rs.getInt("availableCopies") > 0;
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-            stmt.setInt(1, id);
+    // === DECREASE ===
+    public boolean decreaseCopies(Connection conn, int bookId){
+        String sql = "UPTADE BIBLIOTEKA SET availableCopies = availableCopies - 1 WHERE id = ? AND availableCopies > 0";
+
+        try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, bookId);
             return stmt.executeUpdate() > 0;
         }
-        catch (SQLException e){
+        catch(SQLException e){
             e.printStackTrace();
-            return false;
         }
+        return false;
+    }
+
+    // === INCREASE ===
+    public boolean increaseCopies(Connection conn, int bookId){
+        String sql = "UPTADE BIBLIOTEKA SET availableCopies = availableCopies + 1 WHERE id = ? AND totalCopies > availableCopies";
+
+        try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, bookId);
+            return stmt.executeUpdate() > 0;
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
     }
 }

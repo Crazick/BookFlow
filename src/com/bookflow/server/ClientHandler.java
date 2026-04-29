@@ -71,6 +71,7 @@ public class ClientHandler implements Runnable{
         }
         finally {
             try{
+                System.out.println("Klient się rozłączył");
                 socket.close();
             } catch (IOException e){
                 e.printStackTrace();
@@ -88,8 +89,7 @@ public class ClientHandler implements Runnable{
             return;
         }
 
-        RegisterStatus status =
-                libraryService.register(parts[1], parts[2]);
+        RegisterStatus status = libraryService.register(parts[1], parts[2]);
 
         switch (status) {
             case SUCCESS -> out.println("REGISTER_SUCCESS");
@@ -111,11 +111,9 @@ public class ClientHandler implements Runnable{
         String username = parts[1];
         String password = parts[2];
 
-        LoginStatus status =
-                libraryService.login(username, password);
+        LoginStatus status = libraryService.login(username, password);
 
         switch (status) {
-
             case SUCCESS:
                 loggedIn = true;
                 loggedUsername = username;
