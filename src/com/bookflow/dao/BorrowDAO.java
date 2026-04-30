@@ -1,6 +1,12 @@
 package com.bookflow.dao;
 
 import com.bookflow.config.DatabaseManager;
+import com.bookflow.model.Book;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.sql.*;
 
 public class BorrowDAO {
@@ -9,23 +15,28 @@ public class BorrowDAO {
 
     // ===== BORROW BOOK =====
     public boolean borrow(int userId, int bookId) {
-        String insertSql = "INSERT INTO BORROWS(user_id, book_id) VALUES(?, ?)";
+        String sql = "INSERT INTO BORROWS(user_id, book_id, borrow_date, due_date, fine) VALUES(?, ?, ?, ?, 0)";
+
+        LocalDate today = LocalDate.now();
+        LocalDate dueDate = today.plusMonths(1);
 
         try (Connection conn = db.connect()) {
 
             conn.setAutoCommit(false);
 
-            boolean updated = bookDAO.decreaseCopies(conn, bookId);
+            boolean decreased = bookDAO.decreaseCopies(conn, bookId);
 
-            if (!updated) {
+            if (!decreased) {
                 conn.rollback();
                 return false;
             }
 
-            try (PreparedStatement stmt = conn.prepareStatement(insertSql))
+            try (PreparedStatement stmt = conn.prepareStatement(sql))
             {
                 stmt.setInt(1, userId);
                 stmt.setInt(2, bookId);
+                stmt.setString(3, today.toString());
+                stmt.setString(4, dueDate.toString());
                 stmt.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -42,54 +53,114 @@ public class BorrowDAO {
     }
 
     // ===== RETURN BOOK =====
-    public boolean returnBook(int userId, int bookId) {
-        String updateBorrow = "UPDATE BORROWS SET return_date = CURRENT_TIMESTAMP " +
-                        "WHERE user_id = ? AND book_id = ? AND return_date IS NULL";
+    public double returnBook(int userId, int bookId) {
+        String findBorrow = "SELECT id, due_date FROM BORROWS "+
+                "WHERE user_id = ? AND book_id = ? AND return_date IS NULL LIMIT 1";
+        String updateBorrow = "UPDATE BORROWS SET return_date = ?, fine = ? WHERE id = ?";
 
-        String updateBook = "UPDATE BIBLIOTEKA SET availableCopies = availableCopies + 1 WHERE id = ?";
+        LocalDate today = LocalDate.now();
 
         try (Connection conn = db.connect()) {
 
             conn.setAutoCommit(false);
 
-            try (PreparedStatement stmt1 = conn.prepareStatement(updateBorrow)) {
-                stmt1.setInt(1, userId);
-                stmt1.setInt(2, bookId);
+            int borrowId = -1;
+            LocalDate dueDate = null;
 
-                int updated = stmt1.executeUpdate();
+            try (PreparedStatement stmt = conn.prepareStatement(findBorrow)) {
+                stmt.setInt(1, userId);
+                stmt.setInt(2, bookId);
 
-                if (updated == 0) {
+                ResultSet rs = stmt.executeQuery();
+
+                if (!rs.next()) {
                     conn.rollback();
-                    return false;
+                    return -1; // brak wypożyczenia
                 }
+                borrowId = rs.getInt("id");
+                dueDate = LocalDate.parse(rs.getString("due_date"));
+            }
+
+            double fine = 0;
+            if(today.isAfter(dueDate)){
+                long daysLate = ChronoUnit.DAYS.between(dueDate, today);
+                fine = daysLate * 1.0;
+            }
+
+            try(PreparedStatement stmt = conn.prepareStatement(updateBorrow)){
+                stmt.setString(1, today.toString());
+                stmt.setDouble(2,fine);
+                stmt.setInt(3, userId);
+                stmt.executeUpdate();
             }
 
             bookDAO.increaseCopies(conn, bookId);
             conn.commit();
-            return true;
+            return fine;
 
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return -2; // błąd
         }
     }
 
-    // === BORROWED? ===
-    public boolean hasBorrowed(int userId, int bookId){
-        String sql = "SELECT FROM BORROWS WHERE user_id = ? AND book_id = ? AND return_date IS NULL";
+    // === BORROWED LIST ===
+    public List<Book> getBorrowedBooks(int userId){
+        List<Book> result = new ArrayList<>();
+        String sql = "SELECT b.id, b.title, b.author, br.borrow_date, br.due_date " +
+                "FROM BORROWS br JOIN BIBLIOTEKA b ON br.book_id = b.id " +
+                "WHERE br.user_id = ? AND br.return_date IS NULL ORDER BY br.borrow_date";
 
         try(Connection conn = db.connect();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
             stmt.setInt(1, userId);
-            stmt.setInt(2, bookId);
 
             ResultSet rs = stmt.executeQuery();
-            return rs.next();
+            while(rs.next()){
+                String row =
+                        rs.getInt("id") + " | " +
+                                rs.getString("title") + " | " +
+                                rs.getString("author") + " | " +
+                                rs.getString("borrow_date") + " | " +
+                                rs.getString("due_date");
+                result.add(row);
+            }
         }
-        catch(SQLException e){
+        catch (SQLException e){
             e.printStackTrace();
         }
-        return false;
+        return result;
+    }
+
+    // === HISTORY ===
+    public List<String> getHistory(int userId) {
+        List<String> result = new ArrayList<>();
+
+        String sql = "SELECT b.title, br.borrow_date, br.return_date, br.fine " +
+                "FROM BORROWS br JOIN BIBLIOTEKA b ON br.book_id = b.id " +
+                "WHERE br.user_id = ? ORDER BY br.borrow_date DESC";
+
+        try (Connection conn = db.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String row =
+                        rs.getString("title") + " | " +
+                                rs.getString("borrow_date") + " | " +
+                                rs.getString("return_date") + " | kara: " +
+                                rs.getDouble("fine") + " zł";
+                result.add(row);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

@@ -52,6 +52,9 @@ public class ClientHandler implements Runnable{
                     case "SEARCH":
                         handleSearch(parts);
                         break;
+                    case "BORROWED":
+                        handleBorrowed();
+                        break;
                     case "BORROW":
                         handleBorrow(parts);
                         break;
@@ -83,7 +86,6 @@ public class ClientHandler implements Runnable{
     // REGISTER
     // ====================================================
     private void handleRegister(String[] parts) {
-
         if (parts.length < 3) {
             out.println("REGISTER_FAILED");
             return;
@@ -102,7 +104,6 @@ public class ClientHandler implements Runnable{
     // LOGIN
     // ====================================================
     private void handleLogin(String[] parts) {
-
         if (parts.length < 3) {
             out.println("LOGIN_FAILED");
             return;
@@ -118,18 +119,14 @@ public class ClientHandler implements Runnable{
                 loggedIn = true;
                 loggedUsername = username;
                 loggedUserId = libraryService.getUserID(username);
-
                 out.println("LOGIN_SUCCESS");
                 break;
-
             case USER_NOT_FOUND:
                 out.println("USER_NOT_FOUND");
                 break;
-
             case WRONG_PASSWORD:
                 out.println("WRONG_PASSWORD");
                 break;
-
             case ERROR:
                 out.println("LOGIN_ERROR");
                 break;
@@ -140,7 +137,6 @@ public class ClientHandler implements Runnable{
     // SEARCH
     // ====================================================
     private void handleSearch(String[] parts) {
-
         if (!loggedIn) {
             out.println("LOGIN_REQUIRED");
             return;
@@ -154,13 +150,34 @@ public class ClientHandler implements Runnable{
         String phrase = parts[1];
 
         List<Book> result = libraryService.searchBook(phrase);
-
         out.println("BEGIN");
-
         for (Book b : result) {
             out.println(b.toString());
         }
+        out.println("END");
+    }
 
+    // ====================================================
+    // BORROWED
+    // ====================================================
+    private void handleBorrowed(){
+        if (!loggedIn) {
+            out.println("LOGIN_REQUIRED");
+            return;
+        }
+
+        List<Book> results = libraryService.getBorrowedBooks(loggedUserId);
+        if (results.isEmpty()) {
+            out.println("BEGIN");
+            out.println("Brak wypożyczonych książek.");
+            out.println("END");
+            return;
+        }
+
+        out.println("BEGIN");
+        for(Book b : results){
+            out.println(b.toString());
+        }
         out.println("END");
     }
 
@@ -168,7 +185,6 @@ public class ClientHandler implements Runnable{
     // BORROW
     // ====================================================
     private void handleBorrow(String[] parts) {
-
         if (!loggedIn) {
             out.println("LOGIN_REQUIRED");
             return;
@@ -181,12 +197,8 @@ public class ClientHandler implements Runnable{
 
         try {
             int bookId = Integer.parseInt(parts[1]);
-
             boolean success = libraryService.borrowBook(loggedUserId, bookId);
-
-            out.println(success ?
-                    "BORROW_SUCCESS" :
-                    "BORROW_FAILED");
+            out.println(success ? "BORROW_SUCCESS" : "BORROW_FAILED");
 
         } catch (NumberFormatException e) {
             out.println("INVALID_ID");
@@ -197,7 +209,6 @@ public class ClientHandler implements Runnable{
     // RETURN
     // ====================================================
     private void handleReturn(String[] parts) {
-
         if (!loggedIn) {
             out.println("LOGIN_REQUIRED");
             return;
@@ -210,13 +221,15 @@ public class ClientHandler implements Runnable{
 
         try {
             int bookId = Integer.parseInt(parts[1]);
+            double fine = libraryService.returnBook(loggedUserId, bookId);
 
-            boolean success =
-                    libraryService.returnBook(loggedUserId, bookId);
-
-            out.println(success ?
-                    "RETURN_SUCCESS" :
-                    "RETURN_FAILED");
+            if (fine == -1) {
+                out.println("NO_BORROW_FOUND");
+            } else if (fine == -2) {
+                out.println("ERROR");
+            } else {
+                out.println("RETURN_SUCCESS " + fine);
+            }
 
         } catch (NumberFormatException e) {
             out.println("INVALID_ID");

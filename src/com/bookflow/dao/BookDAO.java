@@ -16,7 +16,7 @@ public class BookDAO
     private DatabaseManager db = new DatabaseManager();
 
     // helper mapowania
-    private Book mapBook(ResultSet rs) throws SQLException{
+    public static Book mapBook(ResultSet rs) throws SQLException{
         return new Book(
                 rs.getInt("id"),
                 rs.getString("title"),
@@ -71,7 +71,7 @@ public class BookDAO
 
     // === DECREASE ===
     public boolean decreaseCopies(Connection conn, int bookId){
-        String sql = "UPTADE BIBLIOTEKA SET availableCopies = availableCopies - 1 WHERE id = ? AND availableCopies > 0";
+        String sql = "UPDATE BIBLIOTEKA SET availableCopies = availableCopies - 1 WHERE id = ? AND availableCopies > 0";
 
         try(PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -86,7 +86,7 @@ public class BookDAO
 
     // === INCREASE ===
     public boolean increaseCopies(Connection conn, int bookId){
-        String sql = "UPTADE BIBLIOTEKA SET availableCopies = availableCopies + 1 WHERE id = ? AND totalCopies > availableCopies";
+        String sql = "UPDATE BIBLIOTEKA SET availableCopies = availableCopies + 1 WHERE id = ? AND totalCopies > availableCopies";
 
         try(PreparedStatement stmt = conn.prepareStatement(sql)) {
 

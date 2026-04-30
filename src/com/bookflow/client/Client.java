@@ -85,9 +85,10 @@ public class Client
             while(loggedIn) {
                 System.out.println("\n=== PANEL BIBLIOTEKI ===");
                 System.out.println("1. Szukaj książki");
-                System.out.println("2. Wypożycz książkę");
-                System.out.println("3. Oddaj książkę");
-                System.out.println("4. Wyloguj");
+                System.out.println("2. Wypożyczone książki");
+                System.out.println("3. Wypożycz książkę");
+                System.out.println("4. Oddaj książkę");
+                System.out.println("5. Wyloguj");
                 System.out.println("0. Zamknij");
 
                 System.out.print("Wybór: ");
@@ -108,8 +109,20 @@ public class Client
                             }
                         }
                         break;
-                    // === BORROW ===
+                    // === BORROWED BOOKS ===
                     case "2":
+                        System.out.println("Wypożyczone książki");
+                        out.println("BORROWED");
+
+                        String borrowed;
+                        while (!(borrowed = in.readLine()).equals("END")) {
+                            if (!borrowed.equals("BEGIN")) {
+                                System.out.println(borrowed);
+                            }
+                        }
+                        break;
+                    // === BORROW ===
+                    case "3":
                         System.out.print("Podaj ID książki: ");
                         String borrowId = scanner.nextLine();
 
@@ -118,16 +131,22 @@ public class Client
                         System.out.println(in.readLine());
                         break;
                     // === RETURN ===
-                    case "3":
+                    case "4":
                         System.out.print("Podaj ID książki: ");
                         String returnId = scanner.nextLine();
 
                         out.println("RETURN " + returnId);
 
-                        System.out.println(in.readLine());
+                        String response = in.readLine();
+                        if (response.startsWith("RETURN_SUCCESS")) {
+                            String[] parts = response.split(" ");
+                            System.out.println("Oddano książkę. Kara: " + parts[1] + " zł");
+                        } else {
+                            System.out.println(response);
+                        }
                         break;
                     // === LOGOUT ===
-                    case "4":
+                    case "5":
                         out.println("LOGOUT");
 
                         String logoutResponse = in.readLine();

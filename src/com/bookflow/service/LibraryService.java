@@ -25,8 +25,12 @@ public class LibraryService{
         return borrowDAO.borrow(userId, bookId);
     }
     // zwrot książek
-    public boolean returnBook(int userId, int bookId) {
+    public double returnBook(int userId, int bookId) {
         return borrowDAO.returnBook(userId, bookId);
+    }
+    // wypożyczone
+    public List<Book> getBorrowedBooks(int userId){
+        return borrowDAO.getBorrowedBooks(userId);
     }
 
     // === USERS ===
