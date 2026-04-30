@@ -3,11 +3,10 @@ package com.bookflow.service;
 import com.bookflow.dao.BookDAO;
 import com.bookflow.dao.BorrowDAO;
 import com.bookflow.dao.UserDAO;
-
 import com.bookflow.enums.LoginStatus;
 import com.bookflow.enums.RegisterStatus;
 import com.bookflow.model.Book;
-
+import com.bookflow.model.BorrowedBook;
 import java.util.List;
 
 public class LibraryService{
@@ -29,7 +28,7 @@ public class LibraryService{
         return borrowDAO.returnBook(userId, bookId);
     }
     // wypożyczone
-    public List<Book> getBorrowedBooks(int userId){
+    public List<BorrowedBook> getBorrowedBooks(int userId){
         return borrowDAO.getBorrowedBooks(userId);
     }
 

@@ -1,13 +1,12 @@
 package com.bookflow.dao;
 
 import com.bookflow.config.DatabaseManager;
-import com.bookflow.model.Book;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.bookflow.model.BorrowedBook;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BorrowDAO {
     private DatabaseManager db = new DatabaseManager();
@@ -105,8 +104,8 @@ public class BorrowDAO {
     }
 
     // === BORROWED LIST ===
-    public List<Book> getBorrowedBooks(int userId){
-        List<Book> result = new ArrayList<>();
+    public List<BorrowedBook> getBorrowedBooks(int userId){
+        List<BorrowedBook> result = new ArrayList<>();
         String sql = "SELECT b.id, b.title, b.author, br.borrow_date, br.due_date " +
                 "FROM BORROWS br JOIN BIBLIOTEKA b ON br.book_id = b.id " +
                 "WHERE br.user_id = ? AND br.return_date IS NULL ORDER BY br.borrow_date";
@@ -118,13 +117,16 @@ public class BorrowDAO {
 
             ResultSet rs = stmt.executeQuery();
             while(rs.next()){
-                String row =
-                        rs.getInt("id") + " | " +
-                                rs.getString("title") + " | " +
-                                rs.getString("author") + " | " +
-                                rs.getString("borrow_date") + " | " +
-                                rs.getString("due_date");
-                result.add(row);
+                BorrowedBook book = new BorrowedBook(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        "", 0, 0,
+                        rs.getString("borrow_date"),
+                        rs.getString("due_date"),
+                        null, 0
+                );
+                result.add(book);
             }
         }
         catch (SQLException e){

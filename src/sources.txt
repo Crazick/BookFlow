@@ -5,6 +5,7 @@ src/com/bookflow/dao/BookDAO.java
 src/com/bookflow/dao/BorrowDAO.java
 src/com/bookflow/service/LibraryService.java
 src/com/bookflow/model/Book.java
+src/com/bookflow/model/BorrowedBook.java
 src/com/bookflow/client/Client.java
 src/com/bookflow/client/TestClient.java
 src/com/bookflow/config/DatabaseManager.java

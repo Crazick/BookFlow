@@ -1,10 +1,10 @@
 package com.bookflow.server;
 
-import com.bookflow.service.LibraryService;
-import com.bookflow.model.Book;
 import com.bookflow.enums.LoginStatus;
 import com.bookflow.enums.RegisterStatus;
-
+import com.bookflow.model.Book;
+import com.bookflow.model.BorrowedBook;
+import com.bookflow.service.LibraryService;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
@@ -166,7 +166,7 @@ public class ClientHandler implements Runnable{
             return;
         }
 
-        List<Book> results = libraryService.getBorrowedBooks(loggedUserId);
+        List<BorrowedBook> results = libraryService.getBorrowedBooks(loggedUserId);
         if (results.isEmpty()) {
             out.println("BEGIN");
             out.println("Brak wypożyczonych książek.");
@@ -175,7 +175,7 @@ public class ClientHandler implements Runnable{
         }
 
         out.println("BEGIN");
-        for(Book b : results){
+        for(BorrowedBook b : results){
             out.println(b.toString());
         }
         out.println("END");
