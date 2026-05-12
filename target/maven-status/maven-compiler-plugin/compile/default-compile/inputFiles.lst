@@ -1,0 +1,13 @@
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\client\Client.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\client\TestClient.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\config\DatabaseManager.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\dao\BookDAO.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\dao\BorrowDAO.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\dao\UserDAO.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\enums\LoginStatus.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\enums\RegisterStatus.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\model\Book.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\model\BorrowedBook.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\server\ClientHandler.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\server\Server.java
+C:\Users\Karolina\Desktop\studia\Programowanie\sem4\java\BookFlow\BookFlow\src\main\java\com\bookflow\service\LibraryService.java

@@ -1,0 +1,14 @@
+com\bookflow\enums\LoginStatus.class
+com\bookflow\client\TestClient.class
+com\bookflow\server\ClientHandler$1.class
+com\bookflow\service\LibraryService.class
+com\bookflow\model\Book.class
+com\bookflow\enums\RegisterStatus.class
+com\bookflow\dao\UserDAO.class
+com\bookflow\dao\BorrowDAO.class
+com\bookflow\server\Server.class
+com\bookflow\client\Client.class
+com\bookflow\server\ClientHandler.class
+com\bookflow\model\BorrowedBook.class
+com\bookflow\config\DatabaseManager.class
+com\bookflow\dao\BookDAO.class
