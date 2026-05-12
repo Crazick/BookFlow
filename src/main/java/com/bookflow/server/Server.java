@@ -6,8 +6,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.IOException;
 
+/**
+ * Klasa uruchamiająca serwer bilioteki.
+ * <p>
+ * Serwer nasłuchuje połączeń klientów na porcie 5000.
+ * Dla każdego nowego klienta tworzony jest osobny wątek
+ * obsługiwany przez klasę {@code ClientHandler}.
+ */
 public class Server
 {
+    /**
+     * Główna metoda urchamiająca serwer.
+     * @param args argumenty programu (nieużywane)
+     */
     public static void main(String[] args)
     {
         try{

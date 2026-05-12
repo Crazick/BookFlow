@@ -10,12 +10,27 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 
-// dostęp do bazy danych
+/**
+ * DAO odpowiedzialne za operacje na książkach w bazie danych.
+ * <p>
+ * Obsługuje:
+ * <ul>
+ *     <li>wyszukiwanie książek,</li>
+ *     <li>sprawdzanie dostępności,</li>
+ *     <li>aktualizację liczby egzemplarzy.</li>
+ * </ul>
+ */
 public class BookDAO
 {
+    /** Zarządca połączenia z bazą danych. */
     private DatabaseManager db = new DatabaseManager();
 
-    // helper mapowania
+    /**
+     * Mapuje rekord z bazy danych na obiekt Book.
+     * @param rs wynik zapytania SQL
+     * @return obiekt Book
+     * @throws SQLException gdy wystąpi błąd odczytu danych
+     */
     public static Book mapBook(ResultSet rs) throws SQLException{
         return new Book(
                 rs.getInt("id"),
@@ -28,6 +43,11 @@ public class BookDAO
     }
 
     // === SEARCH ===
+    /**
+     * Wyszukuje książki po tytule lub autorze.
+     * @param phrase fraza wyszukiwania
+     * @return lista znalezionych książek
+     */
     public List<Book> search(String phrase) {
         List<Book> result = new ArrayList<>();
         String sql = "SELECT id, title, author, genre, totalCopies, availableCopies FROM BIBLIOTEKA WHERE LOWER(title) LIKE ? OR LOWER(author) LIKE ?";
@@ -51,8 +71,13 @@ public class BookDAO
     }
 
     // === AVAILABILITY ===
+    /**
+     * Sprawdza czy książka jest dostępna.
+     * @param bookId ID książki
+     * @return true jeśli dostępna, false jeśli nie
+     */
     public boolean isAvailable(int bookId){
-        String sql = "SELECT FROM BIBLIOTEKA WHERE id = ?";
+        String sql = "SELECT * FROM BIBLIOTEKA WHERE id = ?";
 
         try(Connection conn = db.connect();
             PreparedStatement stmt = conn.prepareStatement(sql)){
@@ -70,6 +95,12 @@ public class BookDAO
     }
 
     // === DECREASE ===
+    /**
+     * Zmniejsza liczbę dostępnych egzemplarzy książki.
+     * @param conn aktywne połączenie z bazą (transakcja)
+     * @param bookId ID książki
+     * @return true jeśli operacja się powiodła
+     */
     public boolean decreaseCopies(Connection conn, int bookId){
         String sql = "UPDATE BIBLIOTEKA SET availableCopies = availableCopies - 1 WHERE id = ? AND availableCopies > 0";
 
@@ -85,6 +116,12 @@ public class BookDAO
     }
 
     // === INCREASE ===
+    /**
+     * Zwiększa liczbę dostępnych egzemplarzy książki.
+     * @param conn aktywne połączenie z bazą (transakcja)
+     * @param bookId ID książki
+     * @return true jeśli operacja się powiodła
+     */
     public boolean increaseCopies(Connection conn, int bookId){
         String sql = "UPDATE BIBLIOTEKA SET availableCopies = availableCopies + 1 WHERE id = ? AND totalCopies > availableCopies";
 

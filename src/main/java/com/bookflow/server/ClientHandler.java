@@ -9,23 +9,50 @@ import java.io.*;
 import java.net.Socket;
 import java.util.List;
 
-public class ClientHandler implements Runnable{
+/**
+ * Klasa obsługująca pojedyńczego klienta serwera.
+ * <p>
+ * Każdy klient obsługiwany jest w osobnym wątku.
+ * Klasa odpowiada za:
+ * <ul>
+ *     <li>odbieranie komend od klienta,</li>
+ *     <li>obsługę logowania i rejestracji,</li>
+ *     <li>wyszukiwanie książek,</li>
+ *     <li>wypożyczenie i zwracanie książek.</li>
+ * </ul>
+ */
+public class ClientHandler implements Runnable
+{
+    /** Gniazdo połączenia klienta. */
     private Socket socket;
+    /** Strumień wysyłający dane do klienta. */
     private PrintWriter out;
+    /** Strumień odbieracjący dane od klienta. */
     private BufferedReader in;
+    /** Serwis biblioteki obsługującej logikę aplikacji. */
     private LibraryService libraryService;
-
-
+    /** Identyfikator aktualnie zalogowanego użytkownika. */
     private int loggedUserId = -1;
+    /** Nazwa aktualnie zalogowanego użytkownika. */
     private String loggedUsername = null;
+    /** Informacje o stanie logowania użytkownika. */
     private boolean loggedIn = false;
 
-    // Konstruktor
+    /**
+     * Tworzy nową obsługę klienta.
+     * @param socket gniazdo klienta
+     * @param libraryService serwis biblioteki
+     */
     public ClientHandler(Socket socket, LibraryService libraryService) {
         this.socket = socket;
         this.libraryService = libraryService;
     }
 
+    /**
+     * Uruchamia obsługę klienta w osobnym wątku.
+     * <p>
+     * Metoda nasłuchuje wiadomości od klienta i wykonuje odpowiednie komendy.
+     */
     @Override
     public void run()
     {
@@ -70,7 +97,7 @@ public class ClientHandler implements Runnable{
             }
         }
         catch (Exception e){
-            System.out.println("Klient się rozłączył");
+            e.printStackTrace();
         }
         finally {
             try{
@@ -82,9 +109,10 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    // ====================================================
-    // REGISTER
-    // ====================================================
+    /**
+     * Obsługa rejestracji nowego użytkownika.
+     * @param parts dane komendy przesłanej przez klienta
+     */
     private void handleRegister(String[] parts) {
         if (parts.length < 3) {
             out.println("REGISTER_FAILED");
@@ -100,9 +128,10 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    // ====================================================
-    // LOGIN
-    // ====================================================
+    /**
+     * Obsługa logowania użytkownika
+     * @param parts dane komendy przesłanej przez klienta
+     */
     private void handleLogin(String[] parts) {
         if (parts.length < 3) {
             out.println("LOGIN_FAILED");
@@ -133,9 +162,10 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    // ====================================================
-    // SEARCH
-    // ====================================================
+    /**
+     * Obsługuje wyszukiwanie książek.
+     * @param parts dane komendy przesłanej przez klienta
+     */
     private void handleSearch(String[] parts) {
         if (!loggedIn) {
             out.println("LOGIN_REQUIRED");
@@ -157,9 +187,9 @@ public class ClientHandler implements Runnable{
         out.println("END");
     }
 
-    // ====================================================
-    // BORROWED
-    // ====================================================
+    /**
+     * Pobiera listę wypożyczonych ksiązek użytkownika.
+     */
     private void handleBorrowed(){
         if (!loggedIn) {
             out.println("LOGIN_REQUIRED");
@@ -181,9 +211,10 @@ public class ClientHandler implements Runnable{
         out.println("END");
     }
 
-    // ====================================================
-    // BORROW
-    // ====================================================
+    /**
+     * Obsługuje wypożyczanie książek.
+     * @param parts dane komendy przesłanej przez klienta
+     */
     private void handleBorrow(String[] parts) {
         if (!loggedIn) {
             out.println("LOGIN_REQUIRED");
@@ -205,9 +236,10 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    // ====================================================
-    // RETURN
-    // ====================================================
+    /**
+     * Obsługuje zwracanie książki.
+     * @param parts dane komendy przesłanej przez klienta
+     */
     private void handleReturn(String[] parts) {
         if (!loggedIn) {
             out.println("LOGIN_REQUIRED");
@@ -236,9 +268,9 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    // ====================================================
-    // LOGOUT
-    // ====================================================
+    /**
+     * Wylogowanie aktualnego użytkownika.
+     */
     private void handleLogout() {
 
         loggedIn = false;

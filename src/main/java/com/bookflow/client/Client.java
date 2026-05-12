@@ -4,8 +4,26 @@ import java.io.*;
 import java.util.Scanner;
 import java.net.Socket;
 
+/**
+ * Klasa klienta aplikacji biblioteki.
+ * <p>
+ * Odpowiada za komunikację z serwerem oraz
+ * obsługę interfejsu tekstowego użytkownika.
+ */
 public class Client
 {
+    /**
+     * Uruchamia aplikację klienta.
+     * <p>
+     * Metoda umożliwia:
+     * <ul>
+     *     <li>logowanie i rejestrację użytkownika,</li>
+     *     <li>wyszukiwanie książek,</li>
+     *     <li>wypożyczanie i zwracanie książek,</li>
+     *     <li>wyświetlanie wypożyczonych książek.</li>
+     * </ul>
+     * @param args argumenty programu
+     */
     public static void main(String[] args)
     {
         try(Socket socket = new Socket("localhost", 5000);

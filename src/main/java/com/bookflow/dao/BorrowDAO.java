@@ -8,11 +8,38 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BorrowDAO {
+/**
+ * DAO odpowiedzialne za operacje wypożyczeń książek.
+ * <p>
+ * Obsługuje:
+ * <ul>
+ *     <li>wypożyczanie książek,</li>
+ *     <li>zwrot książek,</li>
+ *     <li>pobieranie listy aktualnych wypożyczeń,</li>
+ *     <li>historię wypożyczeń.</li>
+ * </ul>
+ */
+public class BorrowDAO
+{
+    /** Zarządca połączenia z bazą danych. */
     private DatabaseManager db = new DatabaseManager();
+    /** DAO książek używane do aktualizacji liczby egzemplarzy. */
     private BookDAO bookDAO = new BookDAO();
 
     // ===== BORROW BOOK =====
+    /**
+     * Wypożycza książkę dla użytkownika.
+     * <p>
+     * Operacja:
+     * <ul>
+     *     <li>zmniejsza liczbę dostępnych egzemplarzy,</li>
+     *     <li>dodaje rekord wypożyczenia do bazy,</li>
+     *     <li>ustawia termin zwrotu (1 miesiąc).</li>
+     * </ul>
+     * @param userId ID użytkownika
+     * @param bookId ID książki
+     * @return true jeśli wypożyczenie się powiodło, false w przeciwnym przypadku
+     */
     public boolean borrow(int userId, int bookId) {
         String sql = "INSERT INTO BORROWS(user_id, book_id, borrow_date, due_date, fine) VALUES(?, ?, ?, ?, 0)";
 
@@ -52,6 +79,16 @@ public class BorrowDAO {
     }
 
     // ===== RETURN BOOK =====
+    /**
+     * Zwraca książkę wypożyczoną przez użytkownika.
+     * <p>
+     * Oblicza ewentualną karę za przetrzymanie.
+     * @param userId ID użytkownika
+     * @param bookId ID książki
+     * @return kara za przetrzymanie,
+     *         -1 jeśli nie znaleziono wypożyczenia,
+     *         -2 w przypadku błędu
+     */
     public double returnBook(int userId, int bookId) {
         String findBorrow = "SELECT id, due_date FROM BORROWS "+
                 "WHERE user_id = ? AND book_id = ? AND return_date IS NULL LIMIT 1";
@@ -104,6 +141,11 @@ public class BorrowDAO {
     }
 
     // === BORROWED LIST ===
+    /**
+     * Zwraca listę aktualnie wypożyczonych książek użytkownika.
+     * @param userId ID użytkownika
+     * @return lista wypożyczonych książek
+     */
     public List<BorrowedBook> getBorrowedBooks(int userId){
         List<BorrowedBook> result = new ArrayList<>();
         String sql = "SELECT b.id, b.title, b.author, br.borrow_date, br.due_date " +
@@ -136,6 +178,11 @@ public class BorrowDAO {
     }
 
     // === HISTORY ===
+    /**
+     * Zwraca historię wszystkich wypożyczeń użytkownika.
+     * @param userId ID użytkownika
+     * @return lista wpisów historii wypożyczeń
+     */
     public List<String> getHistory(int userId) {
         List<String> result = new ArrayList<>();
 

@@ -1,5 +1,4 @@
 com\bookflow\enums\LoginStatus.class
-com\bookflow\client\TestClient.class
 com\bookflow\server\ClientHandler$1.class
 com\bookflow\service\LibraryService.class
 com\bookflow\model\Book.class
