@@ -29,6 +29,33 @@ public class LibraryService
     /** Obiekt DAO odpowiedzialny za operacje na wypożyczeniach. */
     private BorrowDAO borrowDAO = new BorrowDAO();
 
+    /**
+     * Tworzy instancję serwisu biblioteki.
+     * <p>
+     * Konstruktor domyślny inicjalizuje wewnętrzne obiekty DAO:
+     * {@link BookDAO}, {@link UserDAO} oraz {@link BorrowDAO}.
+     * Są one wykorzystywane do komunikacji z warstwą bazy danych.
+     */
+    public LibraryService() {}
+
+    /**
+     * Tworzy instancję serwisu biblioteki z wstrzykniętymi zależnościami DAO.
+     * <p>
+     * Konstruktor umożliwia przekazanie własnych implementacji DAO,
+     * co jest szczególnie przydatne w testach jednostkowych
+     * lub przy alternatywnych źródłach danych.
+     *
+     * @param bookDAO obiekt DAO odpowiedzialny za operacje na książkach
+     * @param userDAO obiekt DAO odpowiedzialny za operacje na użytkownikach
+     * @param borrowDAO obiekt DAO odpowiedzialny za operacje na wypożyczeniach
+     */
+    public LibraryService(BookDAO bookDAO, UserDAO userDAO, BorrowDAO borrowDAO)
+    {
+        this.bookDAO = bookDAO;
+        this.userDAO = userDAO;
+        this.borrowDAO = borrowDAO;
+    }
+
     // === BOOKS ===
 
     /**
