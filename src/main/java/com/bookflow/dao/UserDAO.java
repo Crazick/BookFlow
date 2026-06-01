@@ -52,6 +52,32 @@ public class UserDAO
     }
 
     /**
+     * Rejestruje nowego użytkownika w systemie.
+     * Potrzebna do testowania. Umożliwia wykonanie rollback'u.
+     *
+     * @param conn aktywne połączenie z bazą (transakcja)
+     * @param username nazwa użytkownika
+     * @param password hasło użytkownika
+     * @return status rejestracji
+     */
+    public RegisterStatus register(Connection conn, String username, String password)
+    {
+        String sql = "INSERT INTO USERS(username, password) VALUES(?, ?)";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+
+            stmt.executeUpdate();
+            return RegisterStatus.SUCCESS;
+
+        } catch (SQLException e) {
+            return RegisterStatus.ERROR;
+        }
+    }
+
+    /**
      * Loguje użytkownika do systemu.
      *
      * @param username nazwa użytkownika

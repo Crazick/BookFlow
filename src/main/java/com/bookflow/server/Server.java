@@ -23,7 +23,7 @@ public class Server
     {
         try{
             ServerSocket port = new ServerSocket(5000);
-            System.out.println("Uruchamianie serwera...");
+            System.out.println("Uruchamiono serwera...");
 
             LibraryService libraryService = new LibraryService();
 

@@ -72,5 +72,4 @@ public class BookTest
         boolean result = book.isAvailable();
         assertFalse(result);
     }
-
 }

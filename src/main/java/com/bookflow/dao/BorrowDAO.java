@@ -78,6 +78,51 @@ public class BorrowDAO
         }
     }
 
+    /**
+     * Wypożycza książkę dla użytkownika.
+     * <p>
+     * Operacja:
+     * <ul>
+     *     <li>zmniejsza liczbę dostępnych egzemplarzy,</li>
+     *     <li>dodaje rekord wypożyczenia do bazy,</li>
+     *     <li>ustawia termin zwrotu (1 miesiąc).</li>
+     * </ul>
+     *
+     * @param conn aktywne połączenie z bazą (transakcja)
+     * @param userId ID użytkownika
+     * @param bookId ID książki
+     * @return true jeśli wypożyczenie się powiodło, false w przeciwnym przypadku
+     */
+    public boolean borrow(Connection conn, int userId, int bookId) {
+        String sql = "INSERT INTO BORROWS(user_id, book_id, borrow_date, due_date, fine) " + "VALUES(?, ?, ?, ?, 0)";
+
+        LocalDate today = LocalDate.now();
+        LocalDate dueDate = today.plusMonths(1);
+
+        try {
+            boolean decreased = bookDAO.decreaseCopies(conn, bookId);
+
+            if(!decreased){
+                return false;
+            }
+
+            try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, userId);
+                stmt.setInt(2, bookId);
+                stmt.setString(3, today.toString());
+                stmt.setString(4, dueDate.toString());
+
+                stmt.executeUpdate();
+            }
+
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // ===== RETURN BOOK =====
     /**
      * Zwraca książkę wypożyczoną przez użytkownika.
@@ -126,7 +171,7 @@ public class BorrowDAO
             try(PreparedStatement stmt = conn.prepareStatement(updateBorrow)){
                 stmt.setString(1, today.toString());
                 stmt.setDouble(2,fine);
-                stmt.setInt(3, userId);
+                stmt.setInt(3, borrowId);
                 stmt.executeUpdate();
             }
 
@@ -137,6 +182,68 @@ public class BorrowDAO
         } catch (Exception e) {
             e.printStackTrace();
             return -2; // błąd
+        }
+    }
+
+    /**
+     * Zwraca książkę wypożyczoną przez użytkownika.
+     * <p>
+     * Oblicza ewentualną karę za przetrzymanie.
+     *
+     * @param conn aktywne połączenie z bazą (transakcja)
+     * @param userId ID użytkownika
+     * @param bookId ID książki
+     * @return kara za przetrzymanie,
+     *         -1 jeśli nie znaleziono wypożyczenia,
+     *         -2 w przypadku błędu
+     */
+    public double returnBook(Connection conn, int userId, int bookId) {
+        String findBorrow = "SELECT id, due_date FROM BORROWS " + "WHERE user_id = ? AND book_id = ? " +
+                        "AND return_date IS NULL LIMIT 1";
+        String updateBorrow = "UPDATE BORROWS SET return_date = ?, fine = ? WHERE id = ?";
+
+        LocalDate today = LocalDate.now();
+
+        try {
+            int borrowId;
+            LocalDate dueDate;
+
+            try(PreparedStatement stmt = conn.prepareStatement(findBorrow)) {
+                stmt.setInt(1, userId);
+                stmt.setInt(2, bookId);
+
+                ResultSet rs = stmt.executeQuery();
+
+                if(!rs.next()){
+                    return -1;
+                }
+
+                borrowId = rs.getInt("id");
+                dueDate = LocalDate.parse(rs.getString("due_date"));
+            }
+
+            double fine = 0;
+
+            if(today.isAfter(dueDate)){
+                long daysLate = ChronoUnit.DAYS.between(dueDate, today);
+                fine = daysLate;
+            }
+
+            try(PreparedStatement stmt = conn.prepareStatement(updateBorrow)) {
+                stmt.setString(1, today.toString());
+                stmt.setDouble(2, fine);
+                stmt.setInt(3, borrowId);
+
+                stmt.executeUpdate();
+            }
+
+            bookDAO.increaseCopies(conn, bookId);
+
+            return fine;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -2;
         }
     }
 

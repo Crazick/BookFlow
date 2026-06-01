@@ -33,6 +33,7 @@ public class LibraryServiceTest
     }
 
     // test borrowBook()
+    @Test
     void shouldBorrowBook()
     {
         BorrowDAO borrowDAO = mock(BorrowDAO.class);
@@ -90,10 +91,10 @@ public class LibraryServiceTest
 
     // test register()
     @Test
-    void shoudlRegisterUser()
+    void shouldRegisterUser()
     {
         UserDAO userDAO = mock(UserDAO.class);
-        when(userDAO.login("user", "password")).thenReturn(RegisterStatus.SUCCESS);
+        when(userDAO.register("user", "password")).thenReturn(RegisterStatus.SUCCESS);
 
         LibraryService libraryService = new LibraryService(null, userDAO, null);
 
