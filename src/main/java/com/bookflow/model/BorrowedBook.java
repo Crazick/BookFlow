@@ -34,10 +34,8 @@ public class BorrowedBook extends Book // może zmienić na BorrowedRecord
      * @param returnDate data zwrotu
      * @param fine kara za przetrzymanie
      */
-    public BorrowedBook(int id, String title, String author, String genre,
-                        int totalCopies, int availableCopies,
-                        String borrowDate, String dueDate,
-                        String returnDate, double fine) {
+    public BorrowedBook(int id, String title, String author, String genre, int totalCopies, int availableCopies,
+                        String borrowDate, String dueDate, String returnDate, double fine) {
         super(id, title, author, genre, totalCopies, availableCopies);
         this.borrowDate = borrowDate;
         this.dueDate = dueDate;
