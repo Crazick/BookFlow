@@ -30,17 +30,22 @@
         <TableView fx:id="booksTable">
 
             <columns>
+
                 <TableColumn fx:id="idColumn"
-                             text="ID"/>
+                     text="ID"/>
 
                 <TableColumn fx:id="titleColumn"
-                             text="Tytuł"/>
+                     text="Tytuł"/>
 
                 <TableColumn fx:id="authorColumn"
-                             text="Autor"/>
-            </columns>
+                     text="Autor"/>
 
-        </TableView>
+            <TableColumn fx:id="availableColumn"
+                     text="Dostępne"/>
+
+    </columns>
+
+    </TableView>
 
     </center>
 
@@ -50,7 +55,9 @@
 
             <Label text="Moje książki"/>
 
-            <ListView fx:id="borrowedList"/>
+            <ListView fx:id="borrowedList"
+                  prefWidth="600"
+                  prefHeight="500"/>
 
         </VBox>
 
