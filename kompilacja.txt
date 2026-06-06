@@ -8,5 +8,7 @@ uruchamianie
 mvn -q exec:java -Pserver
 // === Client ===
 mvn -q exec:java -Pclient
+// === JavaFX ===
+mvn javafx:run
 
 -q jest po to by na początku nie wyświetlały się komunikaty od maven
