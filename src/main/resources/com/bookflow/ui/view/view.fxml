@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bookflow.ui.view.LibraryController">
+
+    <top>
+        <VBox spacing="10" style="-fx-padding: 15;">
+
+            <Label text="BOOKFLOW"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+            <HBox spacing="10">
+
+                <TextField fx:id="searchField"
+                           promptText="Wpisz autora lub tytuł"/>
+
+                <Button text="Szukaj"
+                        onAction="#handleSearch"/>
+
+            </HBox>
+
+        </VBox>
+    </top>
+
+    <center>
+
+        <TableView fx:id="booksTable">
+
+            <columns>
+                <TableColumn fx:id="idColumn"
+                             text="ID"/>
+
+                <TableColumn fx:id="titleColumn"
+                             text="Tytuł"/>
+
+                <TableColumn fx:id="authorColumn"
+                             text="Autor"/>
+            </columns>
+
+        </TableView>
+
+    </center>
+
+    <right>
+
+        <VBox spacing="10" style="-fx-padding: 15;">
+
+            <Label text="Moje książki"/>
+
+            <ListView fx:id="borrowedList"/>
+
+        </VBox>
+
+    </right>
+
+    <bottom>
+
+        <HBox spacing="10"
+              style="-fx-padding: 15;">
+
+            <TextField fx:id="bookIdField"
+                       promptText="ID książki"/>
+
+            <Button text="Wypożycz"
+                    onAction="#handleBorrow"/>
+
+            <Button text="Oddaj"
+                    onAction="#handleReturn"/>
+
+            <Button text="Wyloguj"
+                    onAction="#handleLogout"/>
+
+        </HBox>
+
+    </bottom>
+
+</BorderPane>
