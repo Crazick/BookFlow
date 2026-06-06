@@ -4,6 +4,8 @@ import com.bookflow.model.Book;
 import com.bookflow.model.BorrowedBook;
 import com.bookflow.service.LibraryService;
 
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,12 +14,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class LibraryController {
 
-    private LibraryService service = new LibraryService();
+    private final LibraryService service = new LibraryService();
 
     private int userId;
 
@@ -40,6 +41,9 @@ public class LibraryController {
     private TableColumn<Book, String> authorColumn;
 
     @FXML
+    private TableColumn<Book, Integer> availableColumn;
+
+    @FXML
     private ListView<String> borrowedList;
 
     public void setUserId(int userId) {
@@ -50,14 +54,25 @@ public class LibraryController {
     @FXML
     private void initialize() {
 
-        idColumn.setCellValueFactory(
-                new PropertyValueFactory<>("id"));
+        idColumn.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(
+                        cellData.getValue().id()
+                ).asObject());
 
-        titleColumn.setCellValueFactory(
-                new PropertyValueFactory<>("title"));
+        titleColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().title()
+                ));
 
-        authorColumn.setCellValueFactory(
-                new PropertyValueFactory<>("author"));
+        authorColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().author()
+                ));
+
+        availableColumn.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(
+                        cellData.getValue().availableCopies()
+                ).asObject());
     }
 
     @FXML
@@ -77,17 +92,30 @@ public class LibraryController {
 
         try {
 
-            int bookId = Integer.parseInt(bookIdField.getText());
+            int bookId = Integer.parseInt(
+                    bookIdField.getText());
 
             boolean success =
                     service.borrowBook(userId, bookId);
 
             if (success) {
+
                 refreshBorrowed();
+                refreshSearchResults();
+
+                System.out.println(
+                        "Książka wypożyczona");
+
+            } else {
+
+                System.out.println(
+                        "Nie można wypożyczyć książki");
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NumberFormatException e) {
+
+            System.out.println(
+                    "Niepoprawne ID książki");
         }
     }
 
@@ -96,17 +124,31 @@ public class LibraryController {
 
         try {
 
-            int bookId = Integer.parseInt(bookIdField.getText());
+            int bookId = Integer.parseInt(
+                    bookIdField.getText());
 
             double fine =
                     service.returnBook(userId, bookId);
 
             if (fine >= 0) {
+
                 refreshBorrowed();
+                refreshSearchResults();
+
+                System.out.println(
+                        "Książka zwrócona. Kara: "
+                                + fine + " zł");
+
+            } else {
+
+                System.out.println(
+                        "Błąd zwrotu książki");
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NumberFormatException e) {
+
+            System.out.println(
+                    "Niepoprawne ID książki");
         }
     }
 
@@ -116,20 +158,35 @@ public class LibraryController {
         try {
 
             FXMLLoader loader =
-                    new FXMLLoader(getClass().getResource(
-                            "/com/bookflow/ui/login/login.fxml"));
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/com/bookflow/ui/login/login.fxml"));
 
             Scene scene =
                     new Scene(loader.load());
 
             Stage stage =
-                    (Stage) booksTable.getScene().getWindow();
+                    (Stage) booksTable
+                            .getScene()
+                            .getWindow();
 
             stage.setScene(scene);
 
         } catch (Exception e) {
+
             e.printStackTrace();
         }
+    }
+
+    private void refreshSearchResults() {
+
+        String phrase = searchField.getText();
+
+        booksTable.setItems(
+                FXCollections.observableArrayList(
+                        service.searchBook(phrase)
+                )
+        );
     }
 
     private void refreshBorrowed() {
