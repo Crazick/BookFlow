@@ -7,7 +7,11 @@ com\bookflow\dao\UserDAO.class
 com\bookflow\dao\BorrowDAO.class
 com\bookflow\server\Server.class
 com\bookflow\client\Client.class
+com\bookflow\ui\login\LoginController.class
 com\bookflow\server\ClientHandler.class
 com\bookflow\model\BorrowedBook.class
+com\bookflow\service\AdminService.class
+com\bookflow\ui\Main.class
 com\bookflow\config\DatabaseManager.class
 com\bookflow\dao\BookDAO.class
+com\bookflow\ui\view\LibraryController.class

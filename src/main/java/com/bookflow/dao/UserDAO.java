@@ -137,4 +137,32 @@ public class UserDAO
 
         return -1;
     }
+
+    
+    /**
+     * Pobiera role użytkownika na podstawie nazwy.
+     *
+     * @param username nazwa użytkownika
+     * @return ROLE użytkownika lub null jeśli nie znaleziono
+     */
+    public String getRole(String username) {
+        String sql = "SELECT role FROM USERS WHERE username = ?";
+        
+        try (Connection conn = db.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql))
+        {
+
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("role");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

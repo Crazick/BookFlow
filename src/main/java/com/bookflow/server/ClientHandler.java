@@ -5,6 +5,8 @@ import com.bookflow.enums.RegisterStatus;
 import com.bookflow.model.Book;
 import com.bookflow.model.BorrowedBook;
 import com.bookflow.service.LibraryService;
+import com.bookflow.service.AdminService;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
@@ -18,7 +20,8 @@ import java.util.List;
  *     <li>odbieranie komend od klienta,</li>
  *     <li>obsługę logowania i rejestracji,</li>
  *     <li>wyszukiwanie książek,</li>
- *     <li>wypożyczenie i zwracanie książek.</li>
+ *     <li>wypożyczenie i zwracanie książek,</li>
+ *     <li>dodawanie, aktualizowanie i usuwanie książek (administracja).</li>
  * </ul>
  */
 public class ClientHandler implements Runnable
@@ -37,6 +40,10 @@ public class ClientHandler implements Runnable
     private String loggedUsername = null;
     /** Informacje o stanie logowania użytkownika. */
     private boolean loggedIn = false;
+    /** Serwis dla administracji - wykonuje operacje dla administracji. */
+    private AdminService adminService = new AdminService();
+    /** Informacje o roli użytkownika. */
+    private boolean isAdmin = false;
 
     /**
      * Tworzy nową obsługę klienta.
@@ -90,6 +97,15 @@ public class ClientHandler implements Runnable
                         break;
                     case "LOGOUT":
                         handleLogout();
+                        break;
+                    case "ADD_BOOK":
+                        handleAddBook(parts);
+                        break;
+                    case "UPDATE_BOOK":
+                        hanleUpdateBook(parts);
+                        break;
+                    case "DELETE_BOOK":
+                        handleDeleteBook(parts);
                         break;
                     default:
                         out.println("UNKNOWN_COMMAND");
@@ -148,7 +164,11 @@ public class ClientHandler implements Runnable
                 loggedIn = true;
                 loggedUsername = username;
                 loggedUserId = libraryService.getUserID(username);
-                out.println("LOGIN_SUCCESS");
+
+                String role = libraryService.getUserRole(username);
+                isAdmin = role != null && role.equalsIgnoreCase("ADMIN");
+
+                out.println("LOGIN_SUCCESS " + role);
                 break;
             case USER_NOT_FOUND:
                 out.println("USER_NOT_FOUND");
@@ -272,11 +292,104 @@ public class ClientHandler implements Runnable
      * Wylogowanie aktualnego użytkownika.
      */
     private void handleLogout() {
-
         loggedIn = false;
         loggedUserId = -1;
         loggedUsername = null;
 
         out.println("LOGOUT_SUCCESS");
+    }
+
+    // !!!! dodać w bazie danych:
+    //  id INTEGER PRIMARY KEY AUTOINCREMENT
+    /**
+     * Obsługuje dodawanie nowej książki (tylko dla administracji).
+     * @param parts dane komendy przesłanej przez klienta
+     */
+    private void handleAddBook(String[] parts){
+        if(!loggedIn || !isAdmin){
+            out.println("ACCESS_DENIED");
+            return;
+        }
+
+        if(parts.length < 6){
+            out.println("ADD_BOOK_FAILED");
+            return;
+        }
+
+        try {
+            String title = parts[1];
+            String author = parts[2];
+            String genre = parts[3];
+            int total = Integer.parseInt(parts[4]);
+            int available = Integer.parseInt(parts[5]);
+
+            Book book = new Book(0, title, author, genre, total, available);
+            boolean success = adminService.addBook(book);
+            
+            out.println(success ? "ADD_BOOK_SUCCESS" : "ADD_BOOK_FAILED");
+        
+        } catch (Exception e) {
+            out.println("ADD_BOOK_ERROR");
+        }
+    }
+
+    /**
+     * Obsługuje aktualizacje danej książki (tylko dla administracji).
+     * @param parts dane komendy przesłanej przez klienta
+     */
+    private void hanleUpdateBook(String[] parts){
+        if(!loggedIn || !isAdmin){
+            out.println("ACCESS_DENIED");
+            return;
+        }
+
+        if(parts.length < 7){
+            out.println("UPDATE_BOOK_FAILED");
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(parts[1]);
+            String title = parts[2];
+            String author = parts[3];
+            String genre = parts[4];
+            int total = Integer.parseInt(parts[5]);
+            int available = Integer.parseInt(parts[6]);
+
+            Book book = new Book(id, title, author, genre, total, available);
+            boolean success = adminService.updateBook(book);
+            
+            out.println(success ? "UPDATE_BOOK_SUCCESS" : "UPDATE_BOOK_FAILED");
+        
+        } catch (Exception e) {
+            out.println("UPDATE_BOOK_ERROR");
+        }
+    }
+ 
+    /**
+     * Obsługuje usuwanie książki po id (tylko dla administracji).
+     * @param parts dane komendy przesłanej przez klienta
+     */
+    private void handleDeleteBook(String[] parts){
+        if(!loggedIn || !isAdmin){
+            out.println("ACCESS_DENIED");
+            return;
+        }
+
+        if(parts.length < 2){
+            out.println("DELETE_BOOK_FAILED");
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(parts[1]);
+            
+            boolean success = adminService.deleteBook(id);
+            
+            out.println(success ? "DELETE_BOOK_SUCCESS" : "DELETE_BOOK_FAILED");
+       
+        } catch (Exception e) {
+            out.println("DELETE_BOOK_ERROR");
+        }
     }
 }

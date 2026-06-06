@@ -134,4 +134,12 @@ public class LibraryService
         return userDAO.getUserID(username);
     }
 
+    /**
+     * Pobiera role użytkownika na podstawie nazwy użytkownika.
+     * @param username nazwa użytkownika
+     * @return rola użytkownika
+     */
+    public String getUserRole(String username){
+        return userDAO.getRole(username);
+    }
 }
