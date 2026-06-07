@@ -28,66 +28,118 @@ public class LoginController {
     @FXML
     private Label messageLabel;
 
-    @FXML
-    private void handleLogin() {
+   @FXML
+private void handleLogin() {
 
-        String login = loginField.getText();
-        String password = passwordField.getText();
+    String login = loginField.getText();
+    String password = passwordField.getText();
 
-        try (
-                Socket socket = new Socket("localhost", 5000);
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(
-                        socket.getOutputStream(), true)
-        ) {
+    try (
+            Socket socket = new Socket("localhost", 5000);
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(
+                    socket.getOutputStream(), true)
+    ) {
 
-            out.println("LOGIN " + login + " " + password);
+        out.println("LOGIN " + login + " " + password);
 
-            String response = in.readLine();
+        String response = in.readLine();
 
-            switch (response) {
+        System.out.println("SERWER ODESŁAŁ: [" + response + "]");
 
-                case "LOGIN_SUCCESS":
+        // ===== POPRAWNE LOGOWANIE =====
 
-                    LibraryService service = new LibraryService();
-                    int userId = service.getUserID(login);
+        if (response != null &&
+                response.startsWith("LOGIN_SUCCESS")) {
 
-                    FXMLLoader loader = new FXMLLoader(
-                            getClass().getResource("/com/bookflow/ui/view/view.fxml")
-                    );
+            String[] parts = response.split(" ");
 
-                    Parent root = loader.load();
+            String role = "USER";
 
-                    LibraryController controller = loader.getController();
-                    controller.setUserId(userId);
-
-                    Stage stage =
-                            (Stage) loginField.getScene().getWindow();
-
-                    stage.setScene(new Scene(root));
-                    stage.setTitle("BookFlow - Biblioteka");
-                    stage.show();
-
-                    break;
-
-                case "USER_NOT_FOUND":
-                    messageLabel.setText("Nie istnieje taki użytkownik");
-                    break;
-
-                case "WRONG_PASSWORD":
-                    messageLabel.setText("Błędne hasło");
-                    break;
-
-                default:
-                    messageLabel.setText("Błąd logowania");
+            if (parts.length >= 2) {
+                role = parts[1];
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            messageLabel.setText("Brak połączenia z serwerem");
+            Stage stage =
+                    (Stage) loginField.getScene().getWindow();
+
+            // ===== ADMIN =====
+
+            if (role.equalsIgnoreCase("ADMIN")) {
+
+                FXMLLoader loader =
+                        new FXMLLoader(
+                                getClass().getResource(
+                                        "/com/bookflow/ui/admin/admin.fxml"));
+
+                Parent root = loader.load();
+
+                stage.setScene(new Scene(root));
+                stage.setTitle("BookFlow - Panel administratora");
+                stage.show();
+
+                return;
+            }
+
+            // ===== USER =====
+
+            LibraryService service =
+                    new LibraryService();
+
+            int userId =
+                    service.getUserID(login);
+
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/com/bookflow/ui/view/view.fxml"));
+
+            Parent root = loader.load();
+
+            LibraryController controller =
+                    loader.getController();
+
+            controller.setUserId(userId);
+
+            stage.setScene(new Scene(root));
+            stage.setTitle("BookFlow - Biblioteka");
+            stage.show();
+
+            return;
         }
+
+        // ===== BŁĘDY =====
+
+        switch (response) {
+
+            case "USER_NOT_FOUND":
+                messageLabel.setText(
+                        "Nie istnieje taki użytkownik");
+                break;
+
+            case "WRONG_PASSWORD":
+                messageLabel.setText(
+                        "Błędne hasło");
+                break;
+
+            case "LOGIN_ERROR":
+                messageLabel.setText(
+                        "Błąd serwera");
+                break;
+
+            default:
+                messageLabel.setText(
+                        "Błąd logowania. Odpowiedź: " + response);
+        }
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+        messageLabel.setText(
+                "Brak połączenia z serwerem");
     }
+}
 
     @FXML
     private void handleRegister() {
@@ -107,6 +159,8 @@ public class LoginController {
 
             String response = in.readLine();
 
+            System.out.println("SERWER ODESŁAŁ: [" + response + "]");
+
             switch (response) {
 
                 case "REGISTER_SUCCESS":
@@ -118,10 +172,13 @@ public class LoginController {
                     break;
 
                 default:
-                    messageLabel.setText("Nie udało się utworzyć konta");
+                    messageLabel.setText(
+                            "Nie udało się utworzyć konta. Odpowiedź: "
+                                    + response);
             }
 
         } catch (Exception e) {
+
             e.printStackTrace();
             messageLabel.setText("Brak połączenia z serwerem");
         }
