@@ -46,8 +46,6 @@ private void handleLogin() {
 
         String response = in.readLine();
 
-        System.out.println("SERWER ODESŁAŁ: [" + response + "]");
-
         // ===== POPRAWNE LOGOWANIE =====
 
         if (response != null &&
@@ -70,8 +68,7 @@ private void handleLogin() {
 
                 FXMLLoader loader =
                         new FXMLLoader(
-                                getClass().getResource(
-                                        "/com/bookflow/ui/admin/admin.fxml"));
+                                getClass().getResource("/com/bookflow/ui/admin/admin.fxml"));
 
                 Parent root = loader.load();
 
@@ -92,8 +89,7 @@ private void handleLogin() {
 
             FXMLLoader loader =
                     new FXMLLoader(
-                            getClass().getResource(
-                                    "/com/bookflow/ui/view/view.fxml"));
+                            getClass().getResource("/com/bookflow/ui/view/view.fxml"));
 
             Parent root = loader.load();
 
@@ -119,25 +115,21 @@ private void handleLogin() {
                 break;
 
             case "WRONG_PASSWORD":
-                messageLabel.setText(
-                        "Błędne hasło");
+                messageLabel.setText("Błędne hasło");
                 break;
 
             case "LOGIN_ERROR":
-                messageLabel.setText(
-                        "Błąd serwera");
+                messageLabel.setText("Błąd serwera");
                 break;
 
             default:
-                messageLabel.setText(
-                        "Błąd logowania. Odpowiedź: " + response);
+                messageLabel.setText("Błąd logowania. Odpowiedź: " + response);
         }
 
     } catch (Exception e) {
 
         e.printStackTrace();
-        messageLabel.setText(
-                "Brak połączenia z serwerem");
+        messageLabel.setText("Brak połączenia z serwerem");
     }
 }
 
@@ -159,7 +151,6 @@ private void handleLogin() {
 
             String response = in.readLine();
 
-            System.out.println("SERWER ODESŁAŁ: [" + response + "]");
 
             switch (response) {
 
