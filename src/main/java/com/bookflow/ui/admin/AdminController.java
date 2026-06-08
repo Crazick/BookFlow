@@ -4,8 +4,11 @@ import com.bookflow.model.Book;
 import com.bookflow.service.AdminService;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 public class AdminController {
 
@@ -76,7 +79,7 @@ public class AdminController {
 
             statusLabel.setText(
                     success
-                            ? "Zaktualizowano"
+                            ? "Zaktualizowano książkę"
                             : "Nie udało się zaktualizować");
 
         } catch (Exception e) {
@@ -120,8 +123,10 @@ public class AdminController {
             titleField.setText(book.title());
             authorField.setText(book.author());
             genreField.setText(book.genre());
+
             totalCopiesField.setText(
                     String.valueOf(book.totalCopies()));
+
             availableCopiesField.setText(
                     String.valueOf(book.availableCopies()));
 
@@ -129,6 +134,32 @@ public class AdminController {
 
         } catch (Exception e) {
             statusLabel.setText("Błędne ID");
+        }
+    }
+
+    @FXML
+    private void handleLogout() {
+
+        try {
+
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/com/bookflow/ui/login/login.fxml"));
+
+            Scene scene =
+                    new Scene(loader.load());
+
+            Stage stage =
+                    (Stage) statusLabel.getScene().getWindow();
+
+            stage.setScene(scene);
+            stage.setTitle("BookFlow - Logowanie");
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            statusLabel.setText("Nie udało się wylogować");
         }
     }
 }
