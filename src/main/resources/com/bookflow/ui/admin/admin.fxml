@@ -46,6 +46,9 @@
 
                 <Button text="Wczytaj"
                         onAction="#handleLoad"/>
+                        
+                <Button text="Wyloguj"
+                        onAction="#handleLogout"/>
 
             </HBox>
 
