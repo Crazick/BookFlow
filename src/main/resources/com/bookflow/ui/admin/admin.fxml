@@ -7,54 +7,112 @@
             fx:controller="com.bookflow.ui.admin.AdminController">
 
     <top>
+
         <Label text="Panel administratora"
-               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 10;"/>
+               style="-fx-font-size: 24px;
+                      -fx-font-weight: bold;
+                      -fx-padding: 10;"/>
+
     </top>
 
     <center>
 
-        <VBox spacing="10" style="-fx-padding: 10;">
+        <HBox spacing="15"
+              style="-fx-padding: 10;">
 
-            <TextField fx:id="idField"
-                       promptText="ID"/>
+            <!-- Formularz -->
 
-            <TextField fx:id="titleField"
-                       promptText="Tytuł"/>
+            <VBox spacing="10"
+                  prefWidth="300">
 
-            <TextField fx:id="authorField"
-                       promptText="Autor"/>
+                <TextField fx:id="idField"
+                           promptText="ID książki"/>
 
-            <TextField fx:id="genreField"
-                       promptText="Gatunek"/>
+                <TextField fx:id="titleField"
+                           promptText="Tytuł"/>
 
-            <TextField fx:id="totalCopiesField"
-                       promptText="Liczba egzemplarzy"/>
+                <TextField fx:id="authorField"
+                           promptText="Autor"/>
 
-            <TextField fx:id="availableCopiesField"
-                       promptText="Dostępne egzemplarze"/>
+                <TextField fx:id="genreField"
+                           promptText="Gatunek"/>
 
-            <HBox spacing="10">
+                <TextField fx:id="totalCopiesField"
+                           promptText="Liczba egzemplarzy"/>
 
-                <Button text="Dodaj"
-                        onAction="#handleAdd"/>
+                <TextField fx:id="availableCopiesField"
+                           promptText="Dostępne egzemplarze"/>
 
-                <Button text="Aktualizuj"
-                        onAction="#handleUpdate"/>
+                <HBox spacing="10">
 
-                <Button text="Usuń"
-                        onAction="#handleDelete"/>
+                    <Button text="Dodaj"
+                            onAction="#handleAdd"/>
 
-                <Button text="Wczytaj"
-                        onAction="#handleLoad"/>
-                        
+                    <Button text="Aktualizuj"
+                            onAction="#handleUpdate"/>
+
+                </HBox>
+
+                <HBox spacing="10">
+
+                    <Button text="Usuń"
+                            onAction="#handleDelete"/>
+
+                    <Button text="Wczytaj"
+                            onAction="#handleLoad"/>
+
+                </HBox>
+
                 <Button text="Wyloguj"
                         onAction="#handleLogout"/>
 
-            </HBox>
+                <Label fx:id="statusLabel"/>
 
-            <Label fx:id="statusLabel"/>
+            </VBox>
 
-        </VBox>
+            <!-- Tabela książek -->
+
+            <TableView fx:id="booksTable"
+                       prefWidth="850"
+                       prefHeight="600">
+
+                <columns>
+
+                    <TableColumn fx:id="idColumn"
+                                 text="ID"
+                                 prefWidth="60"
+                                 resizable="false"/>
+
+                    <TableColumn fx:id="titleColumn"
+                                 text="Tytuł"
+                                 prefWidth="250"
+                                 resizable="false"/>
+
+                    <TableColumn fx:id="authorColumn"
+                                 text="Autor"
+                                 prefWidth="200"
+                                 resizable="false"/>
+
+                    <TableColumn fx:id="genreColumn"
+                                 text="Gatunek"
+                                 prefWidth="150"
+                                 resizable="false"/>
+
+                    <TableColumn fx:id="totalColumn"
+                                 text="Wszystkie"
+                                 prefWidth="90"
+                                 resizable="false"/>
+
+                    <TableColumn fx:id="availableColumn"
+                                 text="Dostępne"
+                                 prefWidth="90"
+                                 resizable="false"/>
+
+                </columns>
+
+            </TableView>
+
+        </HBox>
 
     </center>
 
