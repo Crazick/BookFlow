@@ -6,72 +6,46 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.bookflow.ui.admin.AdminController">
 
+    <!-- GÓRA -->
     <top>
-
         <Label text="Panel administratora"
                style="-fx-font-size: 24px;
                       -fx-font-weight: bold;
                       -fx-padding: 10;"/>
-
     </top>
 
+    <!-- ŚRODEK -->
     <center>
 
-        <HBox spacing="15"
-              style="-fx-padding: 10;">
+        <HBox spacing="15" style="-fx-padding: 10;">
 
-            <!-- Formularz -->
+            <!-- LEWY PANEL - FORMULARZ -->
+            <VBox spacing="10" prefWidth="500">
 
-            <VBox spacing="10"
-                  prefWidth="300">
+                <TextField fx:id="idField" promptText="ID książki"/>
+                <TextField fx:id="titleField" promptText="Tytuł"/>
+                <TextField fx:id="authorField" promptText="Autor"/>
+                <TextField fx:id="genreField" promptText="Gatunek"/>
+                <TextField fx:id="totalCopiesField" promptText="Liczba egzemplarzy"/>
+                <TextField fx:id="availableCopiesField" promptText="Dostępne egzemplarze"/>
 
-                <TextField fx:id="idField"
-                           promptText="ID książki"/>
-
-                <TextField fx:id="titleField"
-                           promptText="Tytuł"/>
-
-                <TextField fx:id="authorField"
-                           promptText="Autor"/>
-
-                <TextField fx:id="genreField"
-                           promptText="Gatunek"/>
-
-                <TextField fx:id="totalCopiesField"
-                           promptText="Liczba egzemplarzy"/>
-
-                <TextField fx:id="availableCopiesField"
-                           promptText="Dostępne egzemplarze"/>
-
+                <!-- PRZYCISKI W JEDNEJ LINII -->
                 <HBox spacing="10">
 
-                    <Button text="Dodaj"
-                            onAction="#handleAdd"/>
-
-                    <Button text="Aktualizuj"
-                            onAction="#handleUpdate"/>
-
-                </HBox>
-
-                <HBox spacing="10">
-
-                    <Button text="Usuń"
-                            onAction="#handleDelete"/>
-
-                    <Button text="Wczytaj"
-                            onAction="#handleLoad"/>
+                    <Button text="Dodaj" onAction="#handleAdd"/>
+                    <Button text="Aktualizuj" onAction="#handleUpdate"/>
+                    <Button text="Usuń" onAction="#handleDelete"/>
+                    <Button text="Wczytaj" onAction="#handleLoad"/>
 
                 </HBox>
-
-                <Button text="Wyloguj"
-                        onAction="#handleLogout"/>
+                <!-- WYLOGUJ -->
+                <Button text="Wyloguj" onAction="#handleLogout"/>
 
                 <Label fx:id="statusLabel"/>
 
             </VBox>
 
-            <!-- Tabela książek -->
-
+            <!-- PRAWA STRONA - TABELA -->
             <TableView fx:id="booksTable"
                        prefWidth="850"
                        prefHeight="600">
