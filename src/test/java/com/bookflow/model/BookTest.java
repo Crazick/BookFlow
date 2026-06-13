@@ -72,4 +72,30 @@ public class BookTest
         boolean result = book.isAvailable();
         assertFalse(result);
     }
+
+    // test setAvailableCopies() negative bounds
+    @Test
+    void shouldNotSetNegativeAvailableCopies()
+    {
+        Book book = new Book(1, "title", "author", "genre", 5, 2);
+
+        // Próbujemy ustawić na -1
+        book.setAvailableCopies(-1);
+
+        // Wartość powinna pozostać niezmieniona (2)
+        assertEquals(2, book.availableCopies());
+    }
+
+    // test setAvailableCopies() upper bounds
+    @Test
+    void shouldNotSetAvailableCopiesAboveTotal()
+    {
+        Book book = new Book(1, "title", "author", "genre", 5, 2);
+
+        // Próbujemy ustawić 10, gdy totalCopies to 5
+        book.setAvailableCopies(10);
+
+        // Wartość powinna pozostać niezmieniona (2)
+        assertEquals(2, book.availableCopies());
+    }
 }

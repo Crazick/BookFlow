@@ -7,7 +7,6 @@ import com.bookflow.enums.LoginStatus;
 import com.bookflow.enums.RegisterStatus;
 import com.bookflow.model.Book;
 
-
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -103,4 +102,15 @@ public class LibraryServiceTest
         assertEquals(RegisterStatus.SUCCESS, result);
     }
 
+    // test register() with invalid password
+    @Test
+    void shouldReturnInvalidPasswordWhenTooShort()
+    {
+        // Hasło ma tylko 4 znaki
+        LibraryService libraryService = new LibraryService(null, null, null);
+
+        RegisterStatus result = libraryService.register("user", "1234");
+
+        assertEquals(RegisterStatus.INVALID_PASSWORD, result);
+    }
 }
