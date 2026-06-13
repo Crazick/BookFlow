@@ -4,8 +4,10 @@ import com.bookflow.enums.LoginStatus;
 import com.bookflow.enums.RegisterStatus;
 import com.bookflow.model.Book;
 import com.bookflow.model.BorrowedBook;
+import com.bookflow.model.NetworkMessage;
 import com.bookflow.service.LibraryService;
 import com.bookflow.service.AdminService;
+import com.google.gson.Gson;
 
 import java.io.*;
 import java.net.Socket;
@@ -60,12 +62,16 @@ public class ClientHandler implements Runnable
     /**
      * Uruchamia obsługę klienta w osobnym wątku.
      * <p>
-     * Metoda nasłuchuje wiadomości od klienta i wykonuje odpowiednie komendy.
+     * Metoda nasłuchuje wiadomości od klienta w formacie JSON,
+     * deserializuje je do obiektu NetworkMessage, a następnie deleguje
+     * wykonanie do odpowiedniej metody obsługującej.
      */
     @Override
     public void run()
     {
         System.out.println("Obsługa klienta w wątku: " + Thread.currentThread().getId());
+
+        Gson gson = new Gson();
 
         try{
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -75,42 +81,71 @@ public class ClientHandler implements Runnable
             while((message = in.readLine()) != null)
             {
                 System.out.println("Otrzymano: " + message);
-                String[] parts = message.split(" ");
-                String command = parts[0].toUpperCase();
 
-                switch(command){
-                    case "REGISTER":
-                        handleRegister(parts);
-                        break;
-                    case "LOGIN":
-                        handleLogin(parts);
-                        break;
-                    case "SEARCH":
-                        handleSearch(parts);
-                        break;
-                    case "BORROWED":
-                        handleBorrowed();
-                        break;
-                    case "BORROW":
-                        handleBorrow(parts);
-                        break;
-                    case "RETURN":
-                        handleReturn(parts);
-                        break;
-                    case "LOGOUT":
-                        handleLogout();
-                        break;
-                    case "ADD_BOOK":
-                        handleAddBook(parts);
-                        break;
-                    case "UPDATE_BOOK":
-                        hanleUpdateBook(parts);
-                        break;
-                    case "DELETE_BOOK":
-                        handleDeleteBook(parts);
-                        break;
-                    default:
+                try {
+                    NetworkMessage netMsg = gson.fromJson(message, NetworkMessage.class);
+                    if (netMsg == null || netMsg.getCommand() == null) {
                         out.println("UNKNOWN_COMMAND");
+                        continue;
+                    }
+
+                    String command = netMsg.getCommand().toUpperCase();
+                    List<String> args = netMsg.getArgs();
+
+                    int argsSize = (args != null) ? args.size() : 0;
+                    String[] parts = new String[argsSize + 1];
+                    parts[0] = command;
+                    for (int i = 0; i < argsSize; i++) {
+                        parts[i + 1] = args.get(i);
+                    }
+
+                    switch (command) {
+                        case "REGISTER":
+                            handleRegister(parts);
+                            break;
+                        case "LOGIN":
+                            handleLogin(parts);
+                            break;
+                        case "SEARCH":
+                            handleSearch(parts);
+                            break;
+                        case "BORROWED":
+                            handleBorrowed();
+                            break;
+                        case "BORROW":
+                            handleBorrow(parts);
+                            break;
+                        case "RETURN":
+                            handleReturn(parts);
+                            break;
+                        case "LOGOUT":
+                            handleLogout();
+                            break;
+                        case "ADD_BOOK":
+                            handleAddBook(parts);
+                            break;
+                        case "UPDATE_BOOK":
+                            hanleUpdateBook(parts);
+                            break;
+                        case "DELETE_BOOK":
+                            handleDeleteBook(parts);
+                            break;
+                        case "GET_BOOK":
+                            int idToLoad = Integer.parseInt(parts[1]);
+                            Book book = adminService.getBook(idToLoad);
+                            if (book != null) {
+                                out.println("GET_BOOK_SUCCESS;" + book.title() + ";" + book.author() + ";" + book.genre() + ";" + book.totalCopies() + ";" + book.availableCopies());
+                            } else {
+                                out.println("GET_BOOK_FAILED");
+                            }
+                            break;
+                        default:
+                            out.println("UNKNOWN_COMMAND");
+                    }
+                }
+                catch (Exception e){
+                    System.out.println("Błąd parsowania JSON: " + e.getMessage());
+                    out.println("INVALID_FROMAT");
                 }
             }
         }

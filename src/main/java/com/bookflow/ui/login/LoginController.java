@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
+import com.google.gson.Gson;
 
+import com.bookflow.model.NetworkMessage;
 import com.bookflow.service.LibraryService;
 import com.bookflow.ui.view.LibraryController;
 
@@ -42,7 +45,9 @@ private void handleLogin() {
                     socket.getOutputStream(), true)
     ) {
 
-        out.println("LOGIN " + login + " " + password);
+        NetworkMessage msg = new NetworkMessage("LOGIN", List.of(login, password));
+        String jsonMessage = new Gson().toJson(msg);
+        out.println(jsonMessage);
 
         String response = in.readLine();
 
@@ -147,7 +152,9 @@ private void handleLogin() {
                         socket.getOutputStream(), true)
         ) {
 
-            out.println("REGISTER " + login + " " + password);
+            NetworkMessage msg = new NetworkMessage("REGISTER", List.of(login, password));
+            String jsonMessage = new Gson().toJson(msg);
+            out.println(jsonMessage);
 
             String response = in.readLine();
 
