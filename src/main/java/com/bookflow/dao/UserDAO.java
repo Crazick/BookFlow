@@ -5,6 +5,9 @@ import com.bookflow.enums.LoginStatus;
 import com.bookflow.enums.RegisterStatus;
 
 import java.sql.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 /**
  * DAO odpowiedzialne za operacje na użytkownikach w bazie danych.
@@ -22,6 +25,23 @@ public class UserDAO
     private DatabaseManager db = new DatabaseManager();
 
     /**
+     * Hashowanie hasła za pomocą SHA-256.
+     *
+     * @param password
+     * @return zahashowane hasło
+     */
+    private String hashPassword(String password) {
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            return Base64.getEncoder().encodeToString(hash);
+        }
+        catch(NoSuchAlgorithmException e){
+            throw new RuntimeException("Błąd algorytmu hashowania.", e);
+        }
+    }
+
+    /**
      * Rejestruje nowego użytkownika w systemie.
      *
      * @param username nazwa użytkownika
@@ -35,18 +55,16 @@ public class UserDAO
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, username);
-            stmt.setString(2, password);
+            stmt.setString(2, hashPassword(password));
 
             stmt.executeUpdate();
             return RegisterStatus.SUCCESS;
         } catch (SQLException e) {
-
             if (e.getMessage().contains("UNIQUE")) {
                 System.out.println("Username already exists");
             } else {
                 System.out.println("DB error: " + e.getMessage());
             }
-
             return RegisterStatus.ERROR;
         }
     }
@@ -91,7 +109,6 @@ public class UserDAO
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, username);
-
             ResultSet rs = stmt.executeQuery();
 
             if (!rs.next()) {
@@ -100,7 +117,7 @@ public class UserDAO
 
             String dbPassword = rs.getString("password");
 
-            if (!dbPassword.equals(password)) {
+            if (!dbPassword.equals(hashPassword(password))) {
                 return LoginStatus.WRONG_PASSWORD;
             }
 

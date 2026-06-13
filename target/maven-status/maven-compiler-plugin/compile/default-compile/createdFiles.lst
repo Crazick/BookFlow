@@ -6,9 +6,11 @@ com\bookflow\enums\RegisterStatus.class
 com\bookflow\dao\UserDAO.class
 com\bookflow\dao\BorrowDAO.class
 com\bookflow\server\Server.class
+com\bookflow\dao\AdminDAO.class
 com\bookflow\client\Client.class
 com\bookflow\ui\login\LoginController.class
 com\bookflow\server\ClientHandler.class
+com\bookflow\ui\admin\AdminController.class
 com\bookflow\model\BorrowedBook.class
 com\bookflow\service\AdminService.class
 com\bookflow\ui\Main.class

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bookflow.ui.admin.AdminController">
+
+    <top>
+        <Label text="Panel administratora"
+               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 10;"/>
+    </top>
+
+    <center>
+
+        <VBox spacing="10" style="-fx-padding: 10;">
+
+            <TextField fx:id="idField"
+                       promptText="ID"/>
+
+            <TextField fx:id="titleField"
+                       promptText="Tytuł"/>
+
+            <TextField fx:id="authorField"
+                       promptText="Autor"/>
+
+            <TextField fx:id="genreField"
+                       promptText="Gatunek"/>
+
+            <TextField fx:id="totalCopiesField"
+                       promptText="Liczba egzemplarzy"/>
+
+            <TextField fx:id="availableCopiesField"
+                       promptText="Dostępne egzemplarze"/>
+
+            <HBox spacing="10">
+
+                <Button text="Dodaj"
+                        onAction="#handleAdd"/>
+
+                <Button text="Aktualizuj"
+                        onAction="#handleUpdate"/>
+
+                <Button text="Usuń"
+                        onAction="#handleDelete"/>
+
+                <Button text="Wczytaj"
+                        onAction="#handleLoad"/>
+                        
+                <Button text="Wyloguj"
+                        onAction="#handleLogout"/>
+
+            </HBox>
+
+            <Label fx:id="statusLabel"/>
+
+        </VBox>
+
+    </center>
+
+</BorderPane>
