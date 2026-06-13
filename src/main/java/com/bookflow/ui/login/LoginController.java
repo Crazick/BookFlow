@@ -169,6 +169,10 @@ private void handleLogin() {
                     messageLabel.setText("Taki login już istnieje");
                     break;
 
+                case "INVALID_PASSWORD":
+                    messageLabel.setText("Hasło musi składać się z min. 4 znaków");
+                    break;
+
                 default:
                     messageLabel.setText(
                             "Nie udało się utworzyć konta. Odpowiedź: "

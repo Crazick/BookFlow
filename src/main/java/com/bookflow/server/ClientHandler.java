@@ -177,6 +177,7 @@ public class ClientHandler implements Runnable
         switch (status) {
             case SUCCESS -> out.println("REGISTER_SUCCESS");
             case USER_EXISTS -> out.println("USER_EXISTS");
+            case INVALID_PASSWORD -> out.println("INVALID_PASSWORD");
             case ERROR -> out.println("REGISTER_ERROR");
         }
     }

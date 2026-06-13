@@ -117,11 +117,16 @@ public class LibraryService
 
     /**
      * Rejestruje nowego użytkownika do systemu.
+     * Wykonuje walidację długości hasła przed próbą zapisu do bazy danych (min. 4 znaki).
+     *
      * @param username nazwa użytkownika
      * @param password hasło użytkownika
      * @return status rejestracji
      */
     public synchronized RegisterStatus register(String username, String password){
+        if(password == null || password.trim().length() < 4){
+            return RegisterStatus.INVALID_PASSWORD;
+        }
         return userDAO.register(username, password);
     }
 
