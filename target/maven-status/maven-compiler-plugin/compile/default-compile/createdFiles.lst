@@ -1,3 +1,4 @@
+com\bookflow\model\NetworkMessage.class
 com\bookflow\enums\LoginStatus.class
 com\bookflow\server\ClientHandler$1.class
 com\bookflow\service\LibraryService.class
