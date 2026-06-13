@@ -135,4 +135,26 @@ public class BookDAO
         }
         return false;
     }
+
+    /**
+     * Pobiera wszystkie książki zarejestrowane w bazie danych biblioteki.
+     * @return lista wszystkich obiektów {@link Book} znajdujących się w bazie danych
+     */
+    public List<Book> getAllBooks(){
+        List<Book> result = new ArrayList<>();
+        String sql = "SELECT id, title, author, genre, totalCopies, availableCopies FROM BIBLIOTEKA";
+
+        try(Connection conn = db.connect();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery())
+        {
+            while(rs.next()){
+                result.add(mapBook(rs));
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

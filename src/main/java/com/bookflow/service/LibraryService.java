@@ -147,4 +147,12 @@ public class LibraryService
     public String getUserRole(String username){
         return userDAO.getRole(username);
     }
+
+    /**
+     * Pobiera pełną listę książek dostępnych w systemie biblioteki.
+     * @return lista wszystkich książek w systemie
+     */
+    public List<Book> getAllBooks(){
+        return bookDAO.getAllBooks();
+    }
 }

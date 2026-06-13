@@ -139,6 +139,9 @@ public class ClientHandler implements Runnable
                                 out.println("GET_BOOK_FAILED");
                             }
                             break;
+                        case "GET_ALL_BOOKS":
+                            handleGetAllBooks();
+                            break;
                         default:
                             out.println("UNKNOWN_COMMAND");
                     }
@@ -429,5 +432,24 @@ public class ClientHandler implements Runnable
         } catch (Exception e) {
             out.println("DELETE_BOOK_ERROR");
         }
+    }
+
+    /**
+     * Obsługuje żądanie sieciowe pobrania wszystkich książek z biblioteki.
+     * Sprawdza stan autoryzacji klienta, a następnie przesyła kompletną listę
+     * pozycji w ustrukturyzowanym formacie tekstowym ograniczonym znacznikami BEGIN i END.
+     */
+    private void handleGetAllBooks(){
+        if(!loggedIn){
+            out.println("LOGIN_REQUIRED");
+            return;
+        }
+
+        List<Book> result = libraryService.getAllBooks();
+        out.println("BEGIN");
+        for(Book b : result){
+            out.println(b.toString());
+        }
+        out.println("END");
     }
 }
