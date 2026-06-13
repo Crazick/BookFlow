@@ -41,7 +41,7 @@ public class ClientHandler implements Runnable
     /** Informacje o stanie logowania użytkownika. */
     private boolean loggedIn = false;
     /** Serwis dla administracji - wykonuje operacje dla administracji. */
-    private AdminService adminService = new AdminService();
+    private AdminService adminService;
     /** Informacje o roli użytkownika. */
     private boolean isAdmin = false;
 
@@ -49,10 +49,12 @@ public class ClientHandler implements Runnable
      * Tworzy nową obsługę klienta.
      * @param socket gniazdo klienta
      * @param libraryService serwis biblioteki
+     * @param adminService serwis administratora
      */
-    public ClientHandler(Socket socket, LibraryService libraryService) {
+    public ClientHandler(Socket socket, LibraryService libraryService, AdminService adminService) {
         this.socket = socket;
         this.libraryService = libraryService;
+        this.adminService = adminService;
     }
 
     /**

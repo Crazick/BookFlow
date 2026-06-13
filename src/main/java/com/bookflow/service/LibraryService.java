@@ -80,7 +80,7 @@ public class LibraryService
      * @return  {@code true} jeśli wypożyczenie zakończyło się sukcesem,
      *          {@code false} w przeciwnym wypadku
      */
-    public boolean borrowBook(int userId, int bookId) {
+    public synchronized boolean borrowBook(int userId, int bookId) {
         return borrowDAO.borrow(userId, bookId);
     }
 
@@ -90,7 +90,7 @@ public class LibraryService
      * @param bookId identyfikator książki
      * @return wysokość ewentualnej kary za opóźnienie
      */
-    public double returnBook(int userId, int bookId) {
+    public synchronized double returnBook(int userId, int bookId) {
         return borrowDAO.returnBook(userId, bookId);
     }
 
@@ -121,7 +121,7 @@ public class LibraryService
      * @param password hasło użytkownika
      * @return status rejestracji
      */
-    public RegisterStatus register(String username, String password){
+    public synchronized RegisterStatus register(String username, String password){
         return userDAO.register(username, password);
     }
 

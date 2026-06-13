@@ -1,5 +1,6 @@
 package com.bookflow.server;
 
+import com.bookflow.service.AdminService;
 import com.bookflow.service.LibraryService;
 
 import java.net.ServerSocket;
@@ -26,13 +27,14 @@ public class Server
             System.out.println("Uruchamiono serwera...");
 
             LibraryService libraryService = new LibraryService();
+            AdminService adminService = new AdminService();
 
             while(true){
                 Socket clientSocket = port.accept();
                 System.out.println("Nowy klient");
 
                 // nowy wątek
-                new Thread(new ClientHandler(clientSocket, libraryService)).start();
+                new Thread(new ClientHandler(clientSocket, libraryService, adminService)).start();
             }
         }
         catch(IOException e){

@@ -41,7 +41,7 @@ public class AdminService {
      * @param book książka do dodanie
      * @return true jeśli operacja się powiodła
      */
-    public boolean addBook(Book book){
+    public synchronized boolean addBook(Book book){
         if(book == null) return false;
 
         if(book.title() == null || book.title().isBlank()) return false;
@@ -59,7 +59,7 @@ public class AdminService {
      * @param book książka do edycji
      * @return tru jeśli aktualizacja się powiodła
      */
-    public boolean updateBook(Book book){
+    public synchronized boolean updateBook(Book book){
         if(book == null) return false;
 
         if(book.id() < 0) return false;
@@ -73,7 +73,7 @@ public class AdminService {
      * @param bookId ID książki
      * @return true jeśli usunięcie się powiodło
      */
-    public boolean deleteBook(int bookId){
+    public synchronized boolean deleteBook(int bookId){
         if(bookId < 0) return false;
 
         return adminDAO.deleteBook(bookId);
