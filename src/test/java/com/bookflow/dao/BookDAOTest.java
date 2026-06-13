@@ -10,7 +10,6 @@ import java.sql.Statement;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class BookDAOTest
 {
     private BookDAO bookDAO;
@@ -22,14 +21,33 @@ public class BookDAOTest
     {
         bookDAO = new BookDAO();
         db = new DatabaseManager();
+
+        try (Connection setupConn = db.connect();
+             Statement stmt = setupConn.createStatement()) {
+
+            stmt.executeUpdate("DELETE FROM BIBLIOTEKA WHERE id IN (9991, 9992)");
+
+            // Książka 9992: dostępna (szukamy też po frazie "Percy" dla testu wyszukiwania)
+            stmt.executeUpdate("INSERT INTO BIBLIOTEKA (id, title, author, genre, totalCopies, availableCopies) " +
+                    "VALUES (9992, 'Percy Jackson', 'Autor Testowy', 'IT', 5, 1)");
+
+            // Książka 9991: niedostępna
+            stmt.executeUpdate("INSERT INTO BIBLIOTEKA (id, title, author, genre, totalCopies, availableCopies) " +
+                    "VALUES (9991, 'Atrapa Niedostępna', 'Autor Testowy', 'IT', 5, 0)");
+        }
+
         conn = db.connect();
         conn.setAutoCommit(false); // potrzebne do rollbacku
     }
 
     @AfterEach
-    void rollback() throws SQLException{
-        conn.rollback(); // cofnięcie po zmianie
+    void teardown() throws SQLException {
+        conn.rollback();
         conn.close();
+        try (Connection cleanupConn = db.connect();
+             Statement stmt = cleanupConn.createStatement()) {
+            stmt.executeUpdate("DELETE FROM BIBLIOTEKA WHERE id IN (9991, 9992)");
+        }
     }
 
     // ================== SEARCH ==================
@@ -37,6 +55,7 @@ public class BookDAOTest
     void shouldFindBook(){
         List<Book> books = bookDAO.search("Percy");
         assertNotNull(books);
+        assertFalse(books.isEmpty());
     }
 
     @Test
@@ -49,21 +68,20 @@ public class BookDAOTest
     // =============== AVAILABILITY ===============
     @Test
     void shouldReturnFalseWhenNotAvailableCopies(){
-        boolean result = bookDAO.isAvailable(1);
+        boolean result = bookDAO.isAvailable(9991);
         assertFalse(result);
     }
 
     @Test
     void shouldReturnTrueWhenAvailableCopies(){
-        boolean result = bookDAO.isAvailable(2);
+        boolean result = bookDAO.isAvailable(9992);
         assertTrue(result);
     }
 
     // ================= DECREASE =================
     @Test
     void shouldDecreaseCopiesWhenAvailable() throws SQLException{
-        int bookId = 2;
-
+        int bookId = 9992;
         boolean before = bookDAO.isAvailable(bookId);
         assertTrue(before);
 
@@ -73,12 +91,12 @@ public class BookDAOTest
         Statement stmt = conn.createStatement();
         var rs = stmt.executeQuery("SELECT availableCopies FROM BIBLIOTEKA WHERE id = " + bookId);
         assertTrue(rs.next());
-        assertEquals(0, rs.getInt(1));
+        assertEquals(0, rs.getInt(1)); // 1 początkowe - 1 zabrane = 0
     }
 
     @Test
     void shouldNotDecreaseCopiesWhenNoCopiesAvailable() throws SQLException{
-        int bookId = 1;
+        int bookId = 9991;
         boolean result = bookDAO.decreaseCopies(conn, bookId);
         assertFalse(result);
     }
@@ -86,7 +104,7 @@ public class BookDAOTest
     // ================= INCREASE =================
     @Test
     void shouldIncreaseCopies() throws SQLException{
-        int bookId = 2;
+        int bookId = 9992;
         int before = getAvailable(bookId);
 
         boolean result = bookDAO.increaseCopies(conn, bookId);
@@ -98,19 +116,13 @@ public class BookDAOTest
 
     @Test
     void shouldNotIncreaseAboveTotalCopies() throws SQLException {
-        int bookId = 2;
-
-        // ustawiamy na max (3)
+        int bookId = 9992;
+        // ustawiamy na max (5)
         try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("""
-                UPDATE BIBLIOTEKA 
-                SET availableCopies = totalCopies 
-                WHERE id = 2
-            """);
+            stmt.executeUpdate("UPDATE BIBLIOTEKA SET availableCopies = totalCopies WHERE id = " + bookId);
         }
 
         boolean result = bookDAO.increaseCopies(conn, bookId);
-
         assertFalse(result);
     }
 
@@ -119,6 +131,6 @@ public class BookDAOTest
         var stmt = conn.createStatement();
         var rs = stmt.executeQuery("SELECT availableCopies FROM BIBLIOTEKA WHERE id = " + bookId);
         rs.next();
-        return  rs.getInt(1);
+        return rs.getInt(1);
     }
 }

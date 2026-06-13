@@ -106,10 +106,9 @@ public class LibraryServiceTest
     @Test
     void shouldReturnInvalidPasswordWhenTooShort()
     {
-        // Hasło ma tylko 4 znaki
         LibraryService libraryService = new LibraryService(null, null, null);
 
-        RegisterStatus result = libraryService.register("user", "1234");
+        RegisterStatus result = libraryService.register("user", "123");
 
         assertEquals(RegisterStatus.INVALID_PASSWORD, result);
     }
