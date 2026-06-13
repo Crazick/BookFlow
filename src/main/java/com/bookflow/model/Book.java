@@ -60,10 +60,12 @@ public class Book
 
     /**
      * Ustawia liczbę dostępnych egzemplarzy.
+     * Zapobiega ustawieniu wartości ujemnej oraz przekroczeniu całkowitej liczby egzemplarzy.
+     *
      * @param i nowa liczba dostępnych książek
      */
     public void setAvailableCopies(int i) {
-        if (i < totalCopies) {
+        if (i <= totalCopies && i >= 0) {
             availableCopies = i;
         }
     }

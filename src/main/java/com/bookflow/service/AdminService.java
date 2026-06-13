@@ -37,32 +37,35 @@ public class AdminService {
 
     /**
      * Dodaje nową książkę do systemu.
-     * 
+     * Wykonuje walidację danych przed przekazaniem ich do DAO.
+     *
      * @param book książka do dodanie
      * @return true jeśli operacja się powiodła
      */
     public synchronized boolean addBook(Book book){
         if(book == null) return false;
-
         if(book.title() == null || book.title().isBlank()) return false;
-
         if(book.author() == null || book.author().isBlank()) return false;
 
-        if(book.totalCopies() < 0) return false;
+        if(book.totalCopies() < 0 || book.availableCopies() < 0) return false;
+        if(book.availableCopies() > book.totalCopies()) return false;
 
         return adminDAO.addBook(book);
     }
 
     /**
      * Edytuje dane książki.
-     * 
+     * Wykonuje walidację chroniącą bazę przed przyjęciem niewłaściwych stanów.
+     *
      * @param book książka do edycji
      * @return tru jeśli aktualizacja się powiodła
      */
     public synchronized boolean updateBook(Book book){
         if(book == null) return false;
-
         if(book.id() < 0) return false;
+
+        if(book.totalCopies() < 0 || book.availableCopies() < 0) return false;
+        if(book.availableCopies() > book.totalCopies()) return false;
 
         return adminDAO.uptadeBook(book);
     }
