@@ -3,48 +3,95 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<!--
+    Widok biblioteki użytkownika aplikacji BookFlow.
+
+    Odpowiada za:
+    - wyszukiwanie książek,
+    - przeglądanie dostępnych książek,
+    - wypożyczanie książek,
+    - zwracanie książek,
+    - wyświetlanie aktualnie wypożyczonych książek,
+    - wylogowanie użytkownika.
+
+    Widok jest obsługiwany przez klasę:
+    com.bookflow.ui.view.LibraryController.
+-->
+
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.bookflow.ui.view.LibraryController">
+            fx:controller="com.bookflow.ui.view.LibraryController"
+            style="-fx-background-color: #ccebe4;">
 
+    <!--
+        Górna sekcja widoku.
+        Zawiera nazwę aplikacji oraz formularz wyszukiwania książek.
+    -->
     <top>
-        <VBox spacing="10" style="-fx-padding: 15;">
 
+        <VBox spacing="10"
+              style="-fx-padding: 15; -fx-background-color: #afe0d5;">
+
+            <!-- Nagłówek aplikacji -->
             <Label text="BOOKFLOW"
-                   style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                   style="-fx-font-size: 24px;
+                          -fx-font-weight: bold;
+                          -fx-text-fill: #4abaa1;"/>
 
+            <!--
+                Sekcja wyszukiwania książek.
+                Umożliwia wyszukiwanie po tytule lub autorze.
+            -->
             <HBox spacing="10">
 
+                <!-- Pole wyszukiwania -->
                 <TextField fx:id="searchField"
                            promptText="Wpisz autora lub tytuł"
-                           prefWidth="400"/>
+                           prefWidth="400"
+                           style="-fx-background-color: white;
+                                  -fx-border-color: #1f5247;"/>
 
+                <!-- Przycisk uruchamiający wyszukiwanie -->
                 <Button text="Szukaj"
-                        onAction="#handleSearch"/>
+                        onAction="#handleSearch"
+                        style="-fx-background-color: #1f5247;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;"/>
 
             </HBox>
 
         </VBox>
+
     </top>
 
+    <!--
+        Centralna część widoku.
+        Wyświetla tabelę z wynikami wyszukiwania książek.
+    -->
     <center>
 
         <TableView fx:id="booksTable"
-                   prefWidth="700">
+                   prefWidth="700"
+                   style="-fx-background-color: white;
+                          -fx-border-color: #1f5247;">
 
             <columns>
 
+                <!-- Kolumna identyfikatora książki -->
                 <TableColumn fx:id="idColumn"
                              text="ID"
                              prefWidth="50"/>
 
+                <!-- Kolumna tytułu książki -->
                 <TableColumn fx:id="titleColumn"
                              text="Tytuł"
                              prefWidth="600"/>
 
+                <!-- Kolumna autora książki -->
                 <TableColumn fx:id="authorColumn"
                              text="Autor"
                              prefWidth="200"/>
 
+                <!-- Kolumna liczby dostępnych egzemplarzy -->
                 <TableColumn fx:id="availableColumn"
                              text="Dostępne"
                              prefWidth="100"/>
@@ -55,39 +102,71 @@
 
     </center>
 
+    <!--
+        Prawy panel użytkownika.
+        Zawiera listę aktualnie wypożyczonych książek.
+    -->
     <right>
 
         <VBox spacing="10"
-              style="-fx-padding: 15;"
+              style="-fx-padding: 15;
+                     -fx-background-color: #c6e9e1;"
               prefWidth="500">
 
-            <Label text="Moje książki"/>
+            <!-- Nagłówek sekcji wypożyczonych książek -->
+            <Label text="Moje książki"
+                   style="-fx-font-size: 16px;
+                          -fx-font-weight: bold;
+                          -fx-text-fill: #163b32;"/>
 
+            <!-- Lista wypożyczonych książek -->
             <ListView fx:id="borrowedList"
                       prefWidth="500"
-                      prefHeight="600"/>
+                      prefHeight="600"
+                      style="-fx-background-color: white;
+                             -fx-border-color: #1f5247;"/>
 
         </VBox>
 
     </right>
 
+    <!--
+        Dolny panel operacji na książkach.
+        Umożliwia wypożyczanie, zwracanie oraz wylogowanie.
+    -->
     <bottom>
 
         <HBox spacing="10"
-              style="-fx-padding: 15;">
+              style="-fx-padding: 15;
+                     -fx-background-color: #c0e7de;">
 
+            <!-- Pole wprowadzania identyfikatora książki -->
             <TextField fx:id="bookIdField"
                        promptText="ID książki"
-                       prefWidth="120"/>
+                       prefWidth="120"
+                       style="-fx-background-color: white;
+                              -fx-border-color: #1f5247;"/>
 
+            <!-- Przycisk wypożyczenia książki -->
             <Button text="Wypożycz"
-                    onAction="#handleBorrow"/>
+                    onAction="#handleBorrow"
+                    style="-fx-background-color: #9dd9cc;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;"/>
 
+            <!-- Przycisk zwrotu książki -->
             <Button text="Oddaj"
-                    onAction="#handleReturn"/>
+                    onAction="#handleReturn"
+                    style="-fx-background-color: #62c3ad;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;"/>
 
+            <!-- Przycisk wylogowania -->
             <Button text="Wyloguj"
-                    onAction="#handleLogout"/>
+                    onAction="#handleLogout"
+                    style="-fx-background-color: #266456;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;"/>
 
         </HBox>
 
