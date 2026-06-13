@@ -52,28 +52,36 @@ public class LibraryController {
     }
 
     @FXML
-    private void initialize() {
+private void initialize() {
 
-        idColumn.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(
-                        cellData.getValue().id()
-                ).asObject());
+    idColumn.setCellValueFactory(cellData ->
+            new SimpleIntegerProperty(
+                    cellData.getValue().id()
+            ).asObject());
 
-        titleColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(
-                        cellData.getValue().title()
-                ));
+    titleColumn.setCellValueFactory(cellData ->
+            new SimpleStringProperty(
+                    cellData.getValue().title()
+            ));
 
-        authorColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(
-                        cellData.getValue().author()
-                ));
+    authorColumn.setCellValueFactory(cellData ->
+            new SimpleStringProperty(
+                    cellData.getValue().author()
+            ));
 
-        availableColumn.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(
-                        cellData.getValue().availableCopies()
-                ).asObject());
-    }
+    availableColumn.setCellValueFactory(cellData ->
+            new SimpleIntegerProperty(
+                    cellData.getValue().availableCopies()
+            ).asObject());
+
+    booksTable.setColumnResizePolicy(
+            TableView.UNCONSTRAINED_RESIZE_POLICY);
+
+    idColumn.setResizable(false);
+    titleColumn.setResizable(false);
+    authorColumn.setResizable(false);
+    availableColumn.setResizable(false);
+}
 
     @FXML
     private void handleSearch() {
