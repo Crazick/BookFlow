@@ -15,7 +15,8 @@
             <HBox spacing="10">
 
                 <TextField fx:id="searchField"
-                           promptText="Wpisz autora lub tytuł"/>
+                           promptText="Wpisz autora lub tytuł"
+                           prefWidth="400"/>
 
                 <Button text="Szukaj"
                         onAction="#handleSearch"/>
@@ -27,37 +28,44 @@
 
     <center>
 
-        <TableView fx:id="booksTable">
+        <TableView fx:id="booksTable"
+                   prefWidth="700">
 
             <columns>
 
                 <TableColumn fx:id="idColumn"
-                     text="ID"/>
+                             text="ID"
+                             prefWidth="50"/>
 
                 <TableColumn fx:id="titleColumn"
-                     text="Tytuł"/>
+                             text="Tytuł"
+                             prefWidth="600"/>
 
                 <TableColumn fx:id="authorColumn"
-                     text="Autor"/>
+                             text="Autor"
+                             prefWidth="200"/>
 
-            <TableColumn fx:id="availableColumn"
-                     text="Dostępne"/>
+                <TableColumn fx:id="availableColumn"
+                             text="Dostępne"
+                             prefWidth="100"/>
 
-    </columns>
+            </columns>
 
-    </TableView>
+        </TableView>
 
     </center>
 
     <right>
 
-        <VBox spacing="10" style="-fx-padding: 15;">
+        <VBox spacing="10"
+              style="-fx-padding: 15;"
+              prefWidth="500">
 
             <Label text="Moje książki"/>
 
             <ListView fx:id="borrowedList"
-                  prefWidth="600"
-                  prefHeight="500"/>
+                      prefWidth="500"
+                      prefHeight="600"/>
 
         </VBox>
 
@@ -69,7 +77,8 @@
               style="-fx-padding: 15;">
 
             <TextField fx:id="bookIdField"
-                       promptText="ID książki"/>
+                       promptText="ID książki"
+                       prefWidth="120"/>
 
             <Button text="Wypożycz"
                     onAction="#handleBorrow"/>
