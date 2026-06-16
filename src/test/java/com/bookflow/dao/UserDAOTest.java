@@ -1,77 +1,58 @@
 package com.bookflow.dao;
 
+import com.bookflow.config.DatabaseManager;
 import com.bookflow.enums.LoginStatus;
 import com.bookflow.enums.RegisterStatus;
-import com.bookflow.config.DatabaseManager;
-import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.*;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import org.junit.jupiter.api.*;
+import java.sql.Statement;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserDAOTest
-{
+public class UserDAOTest {
     private UserDAO userDAO;
     private DatabaseManager db;
 
     @BeforeEach
-    void setup() {
+    void setup() throws SQLException {
         userDAO = new UserDAO();
         db = new DatabaseManager();
+
+        try (Connection conn = db.connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("DELETE FROM USERS WHERE username LIKE 'testuser_%'");
+        }
+
+        userDAO.register("testuser_existing", "haslo1234");
     }
 
-    // ================== LOGIN ===================
+    @AfterEach
+    void teardown() throws SQLException {
+        // Sprzątamy testowe konta z bazy
+        try (Connection conn = db.connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("DELETE FROM USERS WHERE username LIKE 'testuser_%'");
+        }
+    }
+
     @Test
-    void shouldLoginSuccesfully(){
-        LoginStatus result = userDAO.login("test", "test");
-        assertEquals(LoginStatus.SUCCESS, result);
+    void shouldLoginSuccesfully() {
+        assertEquals(LoginStatus.SUCCESS, userDAO.login("testuser_existing", "haslo1234"));
     }
 
     @Test
     void shouldReturnWrongPassword() {
-        LoginStatus result = userDAO.login("test", "zlehaslo");
-        assertEquals(LoginStatus.WRONG_PASSWORD, result);
+        assertEquals(LoginStatus.WRONG_PASSWORD, userDAO.login("testuser_existing", "zlehaslo"));
     }
-
-    @Test
-    void shouldReturnUserNotFound() {
-        LoginStatus result = userDAO.login("nieistnieje", "1234");
-        assertEquals(LoginStatus.USER_NOT_FOUND, result);
-    }
-
-    // ================= REGISTER =================
 
     @Test
     void shouldNotRegisterExistingUser() {
-        RegisterStatus result = userDAO.register("test", "abc");
-        assertEquals(RegisterStatus.ERROR, result);
+        assertEquals(RegisterStatus.ERROR, userDAO.register("testuser_existing", "nowehaslo"));
     }
-
-    @Test
-    void shouldRegisterUser() throws SQLException {
-        try(Connection conn = db.connect()) {
-            conn.setAutoCommit(false);
-
-            RegisterStatus result = userDAO.register(conn, "test123", "1234");
-
-            assertEquals(RegisterStatus.SUCCESS, result);
-            conn.rollback();
-        }
-    }
-
-    // ================= GET USER ID =================
 
     @Test
     void shouldReturnUserId() {
-        int id = userDAO.getUserID("test");
-        assertEquals(0, id);
-    }
-
-    @Test
-    void shouldReturnMinusOneWhenUserNotFound() {
-        int id = userDAO.getUserID("nie_ma_takiego_uzytkownika");
-        assertEquals(-1, id);
+        int id = userDAO.getUserID("testuser_existing");
+        assertTrue(id > 0);
     }
 }

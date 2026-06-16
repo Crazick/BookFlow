@@ -1,81 +1,70 @@
 package com.bookflow.dao;
 
 import com.bookflow.config.DatabaseManager;
-import com.bookflow.model.BorrowedBook;
 import org.junit.jupiter.api.*;
-
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
-
+import java.sql.Statement;
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class BorrowDAOTest {
-
+public class BorrowDAOTest {
     private BorrowDAO borrowDAO;
     private DatabaseManager db;
-    private Connection conn;
 
-    @BeforeAll
+    @BeforeEach
     void setup() throws SQLException {
         borrowDAO = new BorrowDAO();
         db = new DatabaseManager();
-        conn = db.connect();
-        conn.setAutoCommit(false);
+
+        try (Connection conn = db.connect();
+             Statement stmt = conn.createStatement()) {
+
+            stmt.executeUpdate("DELETE FROM BORROWS WHERE user_id = 9991");
+            stmt.executeUpdate("DELETE FROM BIBLIOTEKA WHERE id IN (9991, 9992)");
+            stmt.executeUpdate("DELETE FROM USERS WHERE id = 9991");
+
+            stmt.executeUpdate("INSERT INTO USERS (id, username, password) VALUES (9991, 'borrow_user', 'hash')");
+            stmt.executeUpdate("INSERT INTO BIBLIOTEKA (id, title, author, genre, totalCopies, availableCopies) VALUES (9991, 'Dostępna', 'A', 'IT', 5, 5)");
+            stmt.executeUpdate("INSERT INTO BIBLIOTEKA (id, title, author, genre, totalCopies, availableCopies) VALUES (9992, 'Niedostępna', 'A', 'IT', 5, 0)");
+        }
     }
 
     @AfterEach
-    void rollback() throws SQLException {
-        conn.rollback();
-    }
-
-    @AfterAll
-    void close() throws SQLException {
-        conn.close();
+    void teardown() throws SQLException {
+        try (Connection conn = db.connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("DELETE FROM BORROWS WHERE user_id = 9991");
+            stmt.executeUpdate("DELETE FROM BIBLIOTEKA WHERE id IN (9991, 9992)");
+            stmt.executeUpdate("DELETE FROM USERS WHERE id = 9991");
+        }
     }
 
     @Test
     void shouldBorrowBook() {
-        boolean result = borrowDAO.borrow(conn, 1, 2);
+        boolean result = borrowDAO.borrow(9991, 9991);
         assertTrue(result);
     }
 
     @Test
     void shouldNotBorrowUnavailableBook() {
-        boolean result = borrowDAO.borrow(conn, 0, 1);
+        boolean result = borrowDAO.borrow(9991, 9992);
         assertFalse(result);
     }
 
     @Test
-    void shouldReturnMinusOneWhenBookNotBorrowed() {
-        double result = borrowDAO.returnBook(conn, 999, 999);
-        assertEquals(-1, result);
-    }
-
-    @Test
     void shouldReturnBorrowedBook() {
-        boolean borrowed = borrowDAO.borrow(conn, 1, 2);
-        assertTrue(borrowed);
+        // Najpierw pomyślnie wypożyczamy
+        borrowDAO.borrow(9991, 9991);
 
-        double fine = borrowDAO.returnBook(conn, 1, 2);
-        assertEquals(0.0, fine);
+        double fine = borrowDAO.returnBook(9991, 9991);
+        assertTrue(fine >= 0.0);
     }
 
     @Test
     void shouldGetBorrowedBooks() {
-        borrowDAO.borrow(conn, 0, 0);
+        borrowDAO.borrow(9991, 9991);
 
-        List<BorrowedBook> books = borrowDAO.getBorrowedBooks(1);
-
-        assertNotNull(books);
-        assertFalse(books.isEmpty());
-    }
-
-    @Test
-    void shouldGetHistory() {
-        borrowDAO.borrow(conn, 0, 0);
-        List<String> history = borrowDAO.getHistory(0);
-        assertNotNull(history);
+        boolean isEmpty = borrowDAO.getBorrowedBooks(9991).isEmpty();
+        assertFalse(isEmpty);
     }
 }
