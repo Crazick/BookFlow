@@ -1,9 +1,6 @@
 package com.bookflow.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import com.bookflow.config.DatabaseManager;
 import com.bookflow.model.Book;;
@@ -30,6 +27,7 @@ public class AdminDAO
         int currentTotal = 0;
         int currentAvailable = 0;
 
+        // KROK 1: Odczyt danych (szukamy duplikatu)
         try (Connection conn = db.connect();
              PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
 
@@ -48,6 +46,8 @@ public class AdminDAO
             e.printStackTrace();
             return false;
         }
+
+        // KROK 2: Jeśli książka istnieje -> Sumujemy i robimy UPDATE
         if (existingId != null) {
             String updateSql = "UPDATE BIBLIOTEKA SET totalCopies = ?, availableCopies = ? WHERE id = ?";
             try (Connection conn = db.connect();
@@ -63,16 +63,32 @@ public class AdminDAO
                 return false;
             }
         }
+        // KROK 3: Jeśli książki nie ma -> Sami generujemy nowe ID i robimy INSERT
         else {
-            String insertSql = "INSERT INTO BIBLIOTEKA (title, author, genre, totalCopies, availableCopies) VALUES (?, ?, ?, ?, ?)";
+            int newId = 1; // domyślne ID dla pierwszej książki
+
+            // Szukamy najwyższego ID w bazie
+            try (Connection conn = db.connect();
+                 Statement stmt = conn.createStatement();
+                 ResultSet maxRs = stmt.executeQuery("SELECT MAX(id) FROM BIBLIOTEKA")) {
+                if (maxRs.next()) {
+                    newId = maxRs.getInt(1) + 1; // Bierzemy największe ID i dodajemy 1
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            // Wstawiamy nowe, wyliczone ID ręcznie
+            String insertSql = "INSERT INTO BIBLIOTEKA (id, title, author, genre, totalCopies, availableCopies) VALUES (?, ?, ?, ?, ?, ?)";
             try (Connection conn = db.connect();
                  PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
 
-                insertStmt.setString(1, book.title());
-                insertStmt.setString(2, book.author());
-                insertStmt.setString(3, book.genre());
-                insertStmt.setInt(4, book.totalCopies());
-                insertStmt.setInt(5, book.availableCopies());
+                insertStmt.setInt(1, newId);
+                insertStmt.setString(2, book.title());
+                insertStmt.setString(3, book.author());
+                insertStmt.setString(4, book.genre());
+                insertStmt.setInt(5, book.totalCopies());
+                insertStmt.setInt(6, book.availableCopies());
 
                 return insertStmt.executeUpdate() > 0;
             } catch (SQLException e) {
