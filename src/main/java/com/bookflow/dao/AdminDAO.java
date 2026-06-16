@@ -23,51 +23,64 @@ public class AdminDAO
      * @param book obiekt książki zawierający dane do dodania
      * @return true jeśli dodanie lub aktualizacja się powiodły, false w przypadku błędu
      */
-    public boolean addBook(Book book){
-        String sql = "SELECT id, totalCopies, availableCopies) FROM BIBLIOTEKA" +
-                     " WHERE LOWER(title) = LOWER(?) AND LOWER(author) = LOWER(?)";
+    public boolean addBook(Book book) {
+        String checkSql = "SELECT id, totalCopies, availableCopies FROM BIBLIOTEKA WHERE LOWER(title) = LOWER(?) AND LOWER(author) = LOWER(?)";
 
-        try(Connection conn = db.connect();
-            PreparedStatement stmt = conn.prepareStatement(sql))
-        {
-            stmt.setString(1, book.title());
-            stmt.setString(2, book.author());
-            ResultSet rs = stmt.executeQuery();
+        Integer existingId = null;
+        int currentTotal = 0;
+        int currentAvailable = 0;
 
-            if(rs.next()){
-                int existingId = rs.getInt("id");
-                int newTotal = rs.getInt("totalCopies") + book.totalCopies();
-                int newAvailable = rs.getInt("availableCopies") + book.availableCopies();
+        try (Connection conn = db.connect();
+             PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
 
-                String updateSql = "UPDATE BIBLIOTEKA SET totalCopies = ?, availableCopies = ? WHERE id = ?";
-                try(PreparedStatement updateStmt = conn.prepareStatement(updateSql)){
-                    updateStmt.setInt(1, newTotal);
-                    updateStmt.setInt(2, newAvailable);
-                    updateStmt.setInt(3, existingId);
-                    return updateStmt.executeUpdate() > 0;
+            checkStmt.setString(1, book.title());
+            checkStmt.setString(2, book.author());
+
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) {
+                    existingId = rs.getInt("id");
+                    currentTotal = rs.getInt("totalCopies");
+                    currentAvailable = rs.getInt("availableCopies");
                 }
             }
-            else{
-                String insertSql = """
-                    INSERT INTO BIBLIOTEKA
-                    (title, author, genre, totalCopies, availableCopies)
-                    VALUES (?, ?, ?, ?, ?)
-                """;
-                try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
-                    insertStmt.setString(1, book.title());
-                    insertStmt.setString(2, book.author());
-                    insertStmt.setString(3, book.genre());
-                    insertStmt.setInt(4, book.totalCopies());
-                    insertStmt.setInt(5, book.availableCopies());
-                    return insertStmt.executeUpdate() > 0;
-                }
-            }
+
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
-    }
+        if (existingId != null) {
+            String updateSql = "UPDATE BIBLIOTEKA SET totalCopies = ?, availableCopies = ? WHERE id = ?";
+            try (Connection conn = db.connect();
+                 PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
 
+                updateStmt.setInt(1, currentTotal + book.totalCopies());
+                updateStmt.setInt(2, currentAvailable + book.availableCopies());
+                updateStmt.setInt(3, existingId);
+
+                return updateStmt.executeUpdate() > 0;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        else {
+            String insertSql = "INSERT INTO BIBLIOTEKA (title, author, genre, totalCopies, availableCopies) VALUES (?, ?, ?, ?, ?)";
+            try (Connection conn = db.connect();
+                 PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+
+                insertStmt.setString(1, book.title());
+                insertStmt.setString(2, book.author());
+                insertStmt.setString(3, book.genre());
+                insertStmt.setInt(4, book.totalCopies());
+                insertStmt.setInt(5, book.availableCopies());
+
+                return insertStmt.executeUpdate() > 0;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+    }
     /**
      * Aktualizuje dane książki (bez zmiany ID).
      * 
