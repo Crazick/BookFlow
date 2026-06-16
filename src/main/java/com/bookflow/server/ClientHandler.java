@@ -340,18 +340,11 @@ public class ClientHandler implements Runnable
         out.println("LOGOUT_SUCCESS");
     }
 
-    // !!!! dodać w bazie danych:
-    //  id INTEGER PRIMARY KEY AUTOINCREMENT
     /**
      * Obsługuje dodawanie nowej książki (tylko dla administracji).
      * @param parts dane komendy przesłanej przez klienta
      */
     private void handleAddBook(String[] parts){
-        if(!loggedIn || !isAdmin){
-            out.println("ACCESS_DENIED");
-            return;
-        }
-
         if(parts.length < 6){
             out.println("ADD_BOOK_FAILED");
             return;
@@ -363,12 +356,10 @@ public class ClientHandler implements Runnable
             String genre = parts[3];
             int total = Integer.parseInt(parts[4]);
             int available = Integer.parseInt(parts[5]);
-
             Book book = new Book(0, title, author, genre, total, available);
             boolean success = adminService.addBook(book);
-            
+
             out.println(success ? "ADD_BOOK_SUCCESS" : "ADD_BOOK_FAILED");
-        
         } catch (Exception e) {
             out.println("ADD_BOOK_ERROR");
         }
@@ -379,11 +370,6 @@ public class ClientHandler implements Runnable
      * @param parts dane komendy przesłanej przez klienta
      */
     private void hanleUpdateBook(String[] parts){
-        if(!loggedIn || !isAdmin){
-            out.println("ACCESS_DENIED");
-            return;
-        }
-
         if(parts.length < 7){
             out.println("UPDATE_BOOK_FAILED");
             return;
@@ -396,12 +382,10 @@ public class ClientHandler implements Runnable
             String genre = parts[4];
             int total = Integer.parseInt(parts[5]);
             int available = Integer.parseInt(parts[6]);
-
             Book book = new Book(id, title, author, genre, total, available);
             boolean success = adminService.updateBook(book);
-            
+
             out.println(success ? "UPDATE_BOOK_SUCCESS" : "UPDATE_BOOK_FAILED");
-        
         } catch (Exception e) {
             out.println("UPDATE_BOOK_ERROR");
         }
@@ -412,11 +396,6 @@ public class ClientHandler implements Runnable
      * @param parts dane komendy przesłanej przez klienta
      */
     private void handleDeleteBook(String[] parts){
-        if(!loggedIn || !isAdmin){
-            out.println("ACCESS_DENIED");
-            return;
-        }
-
         if(parts.length < 2){
             out.println("DELETE_BOOK_FAILED");
             return;
@@ -424,11 +403,9 @@ public class ClientHandler implements Runnable
 
         try {
             int id = Integer.parseInt(parts[1]);
-            
             boolean success = adminService.deleteBook(id);
-            
+
             out.println(success ? "DELETE_BOOK_SUCCESS" : "DELETE_BOOK_FAILED");
-       
         } catch (Exception e) {
             out.println("DELETE_BOOK_ERROR");
         }

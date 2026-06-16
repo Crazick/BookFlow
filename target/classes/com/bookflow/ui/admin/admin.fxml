@@ -3,58 +3,202 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.bookflow.ui.admin.AdminController">
+<!--
+    Widok panelu administratora aplikacji BookFlow.
 
+    Odpowiada za:
+    - dodawanie nowych książek,
+    - edycję istniejących książek,
+    - usuwanie książek,
+    - wczytywanie danych wybranej książki,
+    - przeglądanie pełnej listy książek,
+    - wylogowanie administratora.
+
+    Widok jest obsługiwany przez klasę:
+    com.bookflow.ui.admin.AdminController.
+-->
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bookflow.ui.admin.AdminController"
+            style="-fx-background-color: #ccebe4;">
+
+    <!--
+        Górna sekcja widoku.
+        Zawiera nagłówek panelu administratora.
+    -->
     <top>
+
         <Label text="Panel administratora"
-               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 10;"/>
+               style="-fx-font-size: 24px;
+                      -fx-font-weight: bold;
+                      -fx-padding: 15;
+                      -fx-background-color: #afe0d5;
+                      -fx-text-fill: #3ea58e;
+                      -fx-alignment: center;
+                      -fx-max-width: Infinity;"/>
+
     </top>
 
+    <!--
+        Główna część widoku.
+        Zawiera formularz zarządzania książkami
+        oraz tabelę wszystkich książek.
+    -->
     <center>
 
-        <VBox spacing="10" style="-fx-padding: 10;">
+        <HBox spacing="15"
+              style="-fx-padding: 10;">
 
-            <TextField fx:id="idField"
-                       promptText="ID"/>
+            <!--
+                Lewy panel administracyjny.
+                Umożliwia wprowadzanie i edycję danych książki.
+            -->
+            <VBox spacing="10"
+                  prefWidth="500"
+                  style="-fx-background-color: #d8f0eb;
+                         -fx-padding: 15;
+                         -fx-border-color: #1f5247;
+                         -fx-border-width: 1;">
 
-            <TextField fx:id="titleField"
-                       promptText="Tytuł"/>
+                <!-- Pole identyfikatora książki -->
+                <TextField fx:id="idField"
+                           promptText="ID książki"
+                           style="-fx-background-color: white;
+                                  -fx-border-color: #1f5247;"/>
 
-            <TextField fx:id="authorField"
-                       promptText="Autor"/>
+                <!-- Pole tytułu książki -->
+                <TextField fx:id="titleField"
+                           promptText="Tytuł"
+                           style="-fx-background-color: white;
+                                  -fx-border-color: #1f5247;"/>
 
-            <TextField fx:id="genreField"
-                       promptText="Gatunek"/>
+                <!-- Pole autora książki -->
+                <TextField fx:id="authorField"
+                           promptText="Autor"
+                           style="-fx-background-color: white;
+                                  -fx-border-color: #1f5247;"/>
 
-            <TextField fx:id="totalCopiesField"
-                       promptText="Liczba egzemplarzy"/>
+                <!-- Pole gatunku książki -->
+                <TextField fx:id="genreField"
+                           promptText="Gatunek"
+                           style="-fx-background-color: white;
+                                  -fx-border-color: #1f5247;"/>
 
-            <TextField fx:id="availableCopiesField"
-                       promptText="Dostępne egzemplarze"/>
+                <!-- Pole liczby wszystkich egzemplarzy -->
+                <TextField fx:id="totalCopiesField"
+                           promptText="Liczba egzemplarzy"
+                           style="-fx-background-color: white;
+                                  -fx-border-color: #1f5247;"/>
 
-            <HBox spacing="10">
+                <!-- Pole liczby dostępnych egzemplarzy -->
+                <TextField fx:id="availableCopiesField"
+                           promptText="Dostępne egzemplarze"
+                           style="-fx-background-color: white;
+                                  -fx-border-color: #1f5247;"/>
 
-                <Button text="Dodaj"
-                        onAction="#handleAdd"/>
+                <!--
+                    Sekcja przycisków administracyjnych.
+                    Umożliwia wykonywanie operacji na książkach.
+                -->
+                <HBox spacing="10">
 
-                <Button text="Aktualizuj"
-                        onAction="#handleUpdate"/>
+                    <!-- Przycisk dodawania książki -->
+                    <Button text="Dodaj"
+                            onAction="#handleAdd"
+                            style="-fx-background-color: #9dd9cc;
+                                   -fx-text-fill: white;
+                                   -fx-font-weight: bold;"/>
 
-                <Button text="Usuń"
-                        onAction="#handleDelete"/>
+                    <!-- Przycisk aktualizacji danych książki -->
+                    <Button text="Aktualizuj"
+                            onAction="#handleUpdate"
+                            style="-fx-background-color: #7fcebc;
+                                   -fx-text-fill: white;
+                                   -fx-font-weight: bold;"/>
 
-                <Button text="Wczytaj"
-                        onAction="#handleLoad"/>
-                        
+                    <!-- Przycisk usuwania książki -->
+                    <Button text="Usuń"
+                            onAction="#handleDelete"
+                            style="-fx-background-color: #62c3ad;
+                                   -fx-text-fill: white;
+                                   -fx-font-weight: bold;"/>
+
+                    <!-- Przycisk wczytywania danych książki -->
+                    <Button text="Wczytaj"
+                            onAction="#handleLoad"
+                            style="-fx-background-color: #43b198;
+                                   -fx-text-fill: white;
+                                   -fx-font-weight: bold;"/>
+
+                </HBox>
+
+                <!-- Przycisk wylogowania administratora -->
                 <Button text="Wyloguj"
-                        onAction="#handleLogout"/>
+                        onAction="#handleLogout"
+                        style="-fx-background-color: #266456;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;"/>
 
-            </HBox>
+                <!-- Etykieta wyświetlająca komunikaty systemowe -->
+                <Label fx:id="statusLabel"
+                       style="-fx-font-weight: bold;
+                              -fx-text-fill: #0f2923;"/>
 
-            <Label fx:id="statusLabel"/>
+            </VBox>
 
-        </VBox>
+            <!--
+                Tabela książek.
+                Wyświetla wszystkie książki dostępne w systemie.
+            -->
+            <TableView fx:id="booksTable"
+                       prefWidth="1000"
+                       prefHeight="600"
+                       style="-fx-background-color: white;
+                              -fx-border-color: #1f5247;">
+
+                <columns>
+
+                    <!-- Kolumna identyfikatora książki -->
+                    <TableColumn fx:id="idColumn"
+                                 text="ID"
+                                 prefWidth="40"
+                                 resizable="false"/>
+
+                    <!-- Kolumna tytułu książki -->
+                    <TableColumn fx:id="titleColumn"
+                                 text="Tytuł"
+                                 prefWidth="450"
+                                 resizable="false"/>
+
+                    <!-- Kolumna autora książki -->
+                    <TableColumn fx:id="authorColumn"
+                                 text="Autor"
+                                 prefWidth="150"
+                                 resizable="false"/>
+
+                    <!-- Kolumna gatunku książki -->
+                    <TableColumn fx:id="genreColumn"
+                                 text="Gatunek"
+                                 prefWidth="200"
+                                 resizable="false"/>
+
+                    <!-- Kolumna całkowitej liczby egzemplarzy -->
+                    <TableColumn fx:id="totalColumn"
+                                 text="Wszystkie"
+                                 prefWidth="70"
+                                 resizable="false"/>
+
+                    <!-- Kolumna liczby dostępnych egzemplarzy -->
+                    <TableColumn fx:id="availableColumn"
+                                 text="Dostępne"
+                                 prefWidth="70"
+                                 resizable="false"/>
+
+                </columns>
+
+            </TableView>
+
+        </HBox>
 
     </center>
 

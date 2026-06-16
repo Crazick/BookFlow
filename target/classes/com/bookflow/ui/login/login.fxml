@@ -4,43 +4,89 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<!--
+    Widok ekranu logowania aplikacji BookFlow.
+
+    Odpowiada za:
+    - logowanie użytkowników,
+    - rejestrację nowych kont,
+    - wyświetlanie komunikatów o błędach i powodzeniu operacji.
+
+    Widok jest obsługiwany przez klasę:
+    com.bookflow.ui.login.LoginController.
+-->
+
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.bookflow.ui.login.LoginController">
+            fx:controller="com.bookflow.ui.login.LoginController"
+            style="-fx-background-color: #ccebe4;">
 
     <center>
+
+        <!--
+            Główny kontener formularza logowania.
+            Zawiera pola tekstowe, przyciski oraz komunikaty.
+        -->
         <VBox alignment="CENTER"
               spacing="15">
 
             <padding>
-                <Insets top="30" right="30" bottom="30" left="30"/>
+                <Insets top="30"
+                        right="30"
+                        bottom="30"
+                        left="30"/>
             </padding>
 
+            <!-- Nagłówek aplikacji -->
             <Label text="BOOKFLOW"
-                   style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+                   style="-fx-font-size: 28px;
+                          -fx-font-weight: bold;
+                          -fx-text-fill: #4abaa1;"/>
 
+            <!-- Pole wprowadzania loginu -->
             <TextField fx:id="loginField"
                        promptText="Login"
-                       maxWidth="250"/>
+                       maxWidth="250"
+                       style="-fx-background-color: white;
+                              -fx-border-color: #d8f0eb;"/>
 
+            <!-- Pole wprowadzania hasła -->
             <PasswordField fx:id="passwordField"
                            promptText="Hasło"
-                           maxWidth="250"/>
+                           maxWidth="250"
+                           style="-fx-background-color: white;
+                                  -fx-border-color: #d8f0eb;"/>
 
-            <HBox alignment="CENTER" spacing="10">
+            <!--
+                Sekcja przycisków.
+                Umożliwia logowanie lub rejestrację użytkownika.
+            -->
+            <HBox alignment="CENTER"
+                  spacing="10">
 
+                <!-- Przycisk logowania -->
                 <Button text="Zaloguj"
                         onAction="#handleLogin"
-                        prefWidth="120"/>
+                        prefWidth="120"
+                        style="-fx-background-color: #68c5b0;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;"/>
 
+                <!-- Przycisk rejestracji -->
                 <Button text="Zarejestruj"
                         onAction="#handleRegister"
-                        prefWidth="120"/>
+                        prefWidth="120"
+                        style="-fx-background-color: #3c9f89;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;"/>
 
             </HBox>
 
-            <Label fx:id="messageLabel"/>
+            <!-- Etykieta wyświetlająca komunikaty dla użytkownika -->
+            <Label fx:id="messageLabel"
+                   style="-fx-text-fill: red;"/>
 
         </VBox>
+
     </center>
 
 </BorderPane>
